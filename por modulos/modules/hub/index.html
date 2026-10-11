@@ -1308,6 +1308,16 @@
         </div>
         <div class="row">
           <div>
+            <strong>Idioma de la Suite / Language</strong>
+            <span class="desc">Selecciona entre Español e Inglés para los módulos y widgets</span>
+          </div>
+          <select id="select-language" style="background: #141824; border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 6px; padding: 4px 8px; font-size: 0.72rem; outline: none; cursor: pointer;">
+            <option value="es">Español (ES)</option>
+            <option value="en">English (EN)</option>
+          </select>
+        </div>
+        <div class="row">
+          <div>
             <strong>Cerrar Suite Completa</strong>
             <span class="desc">Guarda todos los ajustes y cierra completamente la aplicación</span>
           </div>
@@ -2252,6 +2262,7 @@
     </div>
   </div>
 
+  <script src="hub-i18n.js"></script>
   <script>
     let config = null;
     let selectedC1 = '#181b23';
@@ -2311,6 +2322,10 @@
       if (!window.topapp) return;
       config = await window.topapp.getConfig();
 
+      if (window.hubI18n) {
+        window.hubI18n.applyLanguage(config.language || 'es');
+      }
+
       setupNavigation();
       populateForm();
       bindEvents();
@@ -2318,7 +2333,11 @@
 
       if (window.topapp.onConfigChanged) {
         window.topapp.onConfigChanged((newCfg) => {
+          const oldLang = config?.language;
           config = newCfg;
+          if (window.hubI18n && newCfg.language && newCfg.language !== oldLang) {
+            window.hubI18n.applyLanguage(newCfg.language);
+          }
           populateForm();
         });
       }
@@ -2539,6 +2558,9 @@
 
       document.getElementById('toggle-autostart').checked = !!config.autoStartOnBoot;
 
+      const langSelect = document.getElementById('select-language');
+      if (langSelect) langSelect.value = config.language || 'es';
+
       renderDualWidgetsLists();
 
       const folderLbl = document.getElementById('lbl-search-folder');
@@ -2665,27 +2687,31 @@
       if (rightBadge) rightBadge.textContent = `${right.length} widget${right.length === 1 ? '' : 's'}`;
 
       function buildListHtml(items, side) {
+        const isEn = (config?.language || 'es') === 'en';
         if (!items.length) {
           return `
             <div class="reorder-list-empty">
-              No hay widgets en esta columna.<br>
-              ${side === 'left' ? 'Usa [← A Izquierda] en la columna derecha para añadir widgets aquí.' : 'Usa [→ A Derecha] en la columna izquierda para añadir widgets aquí.'}
+              ${isEn
+                ? `No widgets in this column.<br>${side === 'left' ? 'Use [← To Left] in the right column to add widgets here.' : 'Use [→ To Right] in the left column to add widgets here.'}`
+                : `No hay widgets en esta columna.<br>${side === 'left' ? 'Usa [← A Izquierda] en la columna derecha para añadir widgets aquí.' : 'Usa [→ A Derecha] en la columna izquierda para añadir widgets aquí.'}`}
             </div>
           `;
         }
 
         return items.map((id, index) => {
-          const meta = WIDGET_METADATA[id] || { name: id, icon: '📦', desc: '' };
+          const meta = (isEn && window.hubI18n?.widgetMetaEn?.[id])
+            ? { ...WIDGET_METADATA[id], ...window.hubI18n.widgetMetaEn[id] }
+            : (WIDGET_METADATA[id] || { name: id, icon: '📦', desc: '' });
           const isChecked = v[id] !== false;
           const isLeft = side === 'left';
           const moveBtn = isLeft
-            ? `<button class="btn-move-side" data-id="${id}" data-action="to-right" title="Mover a la columna derecha">→ A Derecha</button>`
-            : `<button class="btn-move-side" data-id="${id}" data-action="to-left" title="Mover a la columna izquierda">← A Izquierda</button>`;
+            ? `<button class="btn-move-side" data-id="${id}" data-action="to-right" title="${isEn ? 'Move to right column' : 'Mover a la columna derecha'}">${isEn ? '→ To Right' : '→ A Derecha'}</button>`
+            : `<button class="btn-move-side" data-id="${id}" data-action="to-left" title="${isEn ? 'Move to left column' : 'Mover a la columna izquierda'}">${isEn ? '← To Left' : '← A Izquierda'}</button>`;
 
           return `
             <div class="reorder-item" draggable="true" data-id="${id}" data-side="${side}" data-index="${index}">
               <div class="reorder-left">
-                <span class="reorder-handle" title="Arrastra para reordenar o mover entre columnas">⋮⋮</span>
+                <span class="reorder-handle" title="${isEn ? 'Drag to reorder or move between columns' : 'Arrastra para reordenar o mover entre columnas'}">⋮⋮</span>
                 <span class="reorder-badge">${index + 1}</span>
                 <span class="reorder-icon">${meta.icon}</span>
                 <div class="reorder-text">
@@ -2696,10 +2722,10 @@
               <div class="reorder-right">
                 ${moveBtn}
                 <div class="reorder-arrows">
-                  <button class="btn-arrow btn-arrow-up" data-id="${id}" data-side="${side}" title="Subir posición" ${index === 0 ? 'disabled' : ''}>▲</button>
-                  <button class="btn-arrow btn-arrow-down" data-id="${id}" data-side="${side}" title="Bajar posición" ${index === items.length - 1 ? 'disabled' : ''}>▼</button>
+                  <button class="btn-arrow btn-arrow-up" data-id="${id}" data-side="${side}" title="${isEn ? 'Move up' : 'Subir posición'}" ${index === 0 ? 'disabled' : ''}>▲</button>
+                  <button class="btn-arrow btn-arrow-down" data-id="${id}" data-side="${side}" title="${isEn ? 'Move down' : 'Bajar posición'}" ${index === items.length - 1 ? 'disabled' : ''}>▼</button>
                 </div>
-                <label class="switch" title="Mostrar u ocultar en pantalla">
+                <label class="switch" title="${isEn ? 'Show or hide on screen' : 'Mostrar u ocultar en pantalla'}">
                   <input type="checkbox" class="widget-vis-toggle" data-id="${id}" ${isChecked ? 'checked' : ''}>
                   <span class="slider"></span>
                 </label>
@@ -2879,15 +2905,16 @@
       const box = document.getElementById('dock-current-apps-list');
       if (!box) return;
       const apps = config?.dockApps || [];
+      const isEn = (config?.language || 'es') === 'en';
       if (!apps.length) {
-        box.innerHTML = '<div style="font-size: 0.7rem; color: #64748b;">No hay aplicaciones ancladas en el Dock.</div>';
+        box.innerHTML = `<div style="font-size: 0.7rem; color: #64748b;">${isEn ? 'No apps pinned to Dock.' : 'No hay aplicaciones ancladas en el Dock.'}</div>`;
         return;
       }
       box.innerHTML = apps.map(app => `
         <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 4px 8px;">
           ${app.iconUrl ? `<img src="${app.iconUrl}" style="width: 18px; height: 18px; object-fit: contain;">` : '🚀'}
           <span style="font-size: 0.68rem; color: #fff; font-weight: 500;">${app.name}</span>
-          <button class="btn-remove-dock-app" data-id="${app.id}" data-path="${app.path}" style="background: transparent; border: none; color: #ef4444; font-size: 0.75rem; cursor: pointer; padding: 0 3px; font-weight: 700;" title="Quitar del Dock">✕</button>
+          <button class="btn-remove-dock-app" data-id="${app.id}" data-path="${app.path}" style="background: transparent; border: none; color: #ef4444; font-size: 0.75rem; cursor: pointer; padding: 0 3px; font-weight: 700;" title="${isEn ? 'Remove from Dock' : 'Quitar del Dock'}">✕</button>
         </div>
       `).join('');
 
@@ -2907,18 +2934,19 @@
     function renderFencesList() {
       const box = document.getElementById('fences-summary-list');
       const fences = config.fences || [];
+      const isEn = (config?.language || 'es') === 'en';
       if (!fences.length) {
-        box.innerHTML = '<div style="font-size: 0.7rem; color: #64748b;">No hay cajones activos. Pulsa el botón de arriba para crear uno.</div>';
+        box.innerHTML = `<div style="font-size: 0.7rem; color: #64748b;">${isEn ? 'No active fences. Click the button above to create one.' : 'No hay cajones activos. Pulsa el botón de arriba para crear uno.'}</div>`;
         return;
       }
       box.innerHTML = fences.map(f => `
         <div class="row" style="gap: 10px; align-items: center;">
           <div style="flex: 1;">
-            <strong>📁 ${f.title || 'Cajón'}</strong>
-            <span class="desc">${(f.icons || []).length} elementos • ${f.isPinned ? '📌 Fijado en el fondo' : 'Flotante libre (movible)'}</span>
+            <strong>📁 ${f.title || (isEn ? 'Fence' : 'Cajón')}</strong>
+            <span class="desc">${(f.icons || []).length} ${isEn ? 'items' : 'elementos'} • ${f.isPinned ? (isEn ? '📌 Pinned to desktop' : '📌 Fijado en el fondo') : (isEn ? 'Free floating (draggable)' : 'Flotante libre (movible)')}</span>
           </div>
           <button class="btn-dark btn-toggle-pin" data-id="${f.id}">
-            ${f.isPinned ? 'Desfijar' : '📌 Fijar con Alfiler'}
+            ${f.isPinned ? (isEn ? 'Unpin' : 'Desfijar') : (isEn ? '📌 Pin to Desktop' : '📌 Fijar con Alfiler')}
           </button>
         </div>
       `).join('');
@@ -3156,6 +3184,21 @@
       document.getElementById('toggle-autostart').onchange = (e) => {
         window.topapp.setAutostart(e.target.checked);
       };
+
+      const langSelectEl = document.getElementById('select-language');
+      if (langSelectEl) {
+        langSelectEl.onchange = async (e) => {
+          const newLang = e.target.value;
+          config.language = newLang;
+          await window.topapp.saveConfig({ language: newLang });
+          if (window.hubI18n) {
+            window.hubI18n.applyLanguage(newLang);
+          }
+          renderDualWidgetsLists();
+          renderFencesList();
+          renderCurrentDockAppsList();
+        };
+      }
 
       // Wallpaper generator & presets (1:1 with user's screenshot)
       const c1Pick = document.getElementById('wall-custom-c1-pick');
@@ -4179,18 +4222,23 @@
     function renderWebServicesList() {
       const container = document.getElementById('ai-web-services-container');
       if (!container) return;
-      container.innerHTML = TOP_15_SERVICES.map(s => `
+      const isEn = (config?.language || 'es') === 'en';
+      container.innerHTML = TOP_15_SERVICES.map(s => {
+        const voiceText = isEn ? s.voice.replace(/^Abre\s+/i, 'Open ') : s.voice;
+        const launchText = isEn ? '🚀 Open Now' : '🚀 Abrir Ahora';
+        return `
         <div class="service-card">
           <div class="service-card-header">
             <span class="service-icon">${s.icon}</span>
             <span class="service-name">${s.name}</span>
           </div>
-          <div class="service-voice" title="Comando de voz">🎙️ "${s.voice}"</div>
+          <div class="service-voice" title="${isEn ? 'Voice command' : 'Comando de voz'}">🎙️ "${voiceText}"</div>
           <button class="btn-service-launch" data-url="${s.url}">
-            <span>🚀 Abrir Ahora</span>
+            <span>${launchText}</span>
           </button>
         </div>
-      `).join('');
+      `;
+      }).join('');
 
       container.querySelectorAll('.btn-service-launch').forEach(btn => {
         btn.onclick = () => {
@@ -4202,22 +4250,24 @@
 
     async function loadScannedApps() {
       const box = document.getElementById('apps-catalog-box');
-      box.innerHTML = '<div style="padding: 16px; text-align: center; color: #94a3b8; font-size: 0.72rem;">Escaneando aplicaciones instaladas en Windows...</div>';
+      const isEn = (config?.language || 'es') === 'en';
+      box.innerHTML = `<div style="padding: 16px; text-align: center; color: #94a3b8; font-size: 0.72rem;">${isEn ? 'Scanning installed Windows applications...' : 'Escaneando aplicaciones instaladas en Windows...'}</div>`;
       try {
         scannedApps = await window.topapp.scanApps();
         renderScannedAppsList();
       } catch (err) {
-        box.innerHTML = '<div style="padding: 16px; text-align: center; color: #ef4444; font-size: 0.72rem;">Error al escanear aplicaciones.</div>';
+        box.innerHTML = `<div style="padding: 16px; text-align: center; color: #ef4444; font-size: 0.72rem;">${isEn ? 'Error scanning applications.' : 'Error al escanear aplicaciones.'}</div>`;
       }
     }
 
     function renderScannedAppsList() {
       const box = document.getElementById('apps-catalog-box');
+      const isEn = (config?.language || 'es') === 'en';
       const q = (document.getElementById('filter-apps-box').value || '').trim().toLowerCase();
       const filtered = q ? scannedApps.filter(a => a.name.toLowerCase().includes(q) || a.path.toLowerCase().includes(q)) : scannedApps;
 
       if (!filtered.length) {
-        box.innerHTML = '<div style="padding: 16px; text-align: center; color: #64748b; font-size: 0.72rem;">No se encontraron programas con ese nombre.</div>';
+        box.innerHTML = `<div style="padding: 16px; text-align: center; color: #64748b; font-size: 0.72rem;">${isEn ? 'No programs found with that name.' : 'No se encontraron programas con ese nombre.'}</div>`;
         return;
       }
 
@@ -4230,7 +4280,7 @@
             <div style="font-weight: 700; color: #fff;">${app.name}</div>
             <div style="font-size: 0.6rem; color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${app.path}</div>
           </div>
-          <button class="btn-action btn-add-dock-item" style="padding: 4px 10px; font-size: 0.65rem;">+ Añadir</button>
+          <button class="btn-action btn-add-dock-item" style="padding: 4px 10px; font-size: 0.65rem;">${isEn ? '+ Add' : '+ Añadir'}</button>
         </div>
       `).join('');
 

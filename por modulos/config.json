@@ -5,6 +5,8 @@
   "curtainButtonsEnabled": true,
   "aiEnabled": true,
   "hasSeenWelcome": false,
+  "language": "en",
+
   "aiConfig": {
     "enabled": true,
     "mode": "both",

@@ -11,6 +11,71 @@
     root.initWidgetDashboard = factory();
   }
 })(typeof window !== 'undefined' ? window : this, function () {
+  const translations = {
+    en: {
+      "Descargas": "Downloads",
+      "Documentos": "Documents",
+      "Escritorio": "Desktop",
+      "Imágenes": "Pictures",
+      "Música": "Music",
+      "Vídeos": "Videos",
+      "Acceso Rápido": "Quick Access",
+      "Carpetas": "Folders",
+      "Portapapeles": "Clipboard",
+      "Dispositivos y Unidades": "Devices & Drives",
+      "Control & Batería": "Controls & Battery",
+      "Telemetría Térmica": "Thermal Telemetry",
+      "Procesadores Activos": "Active Processors",
+      "Tráfico de Red I/O": "Network I/O Traffic",
+      "Impresoras & Escáneres": "Printers & Scanners",
+      "Conectividad & Red": "Connectivity & Network",
+      "Buscador Rápido": "Quick Search",
+      "Hora & Fecha": "Time & Date",
+      "Memoria RAM": "RAM Memory",
+      "Procesos": "Processes",
+      "Liberar RAM": "Free RAM",
+      "Vaciar": "Clear",
+      "Copiar": "Copy",
+      "Estado": "Status",
+      "Preparada": "Ready",
+      "Buscar": "Search",
+      "Núcleos": "Cores",
+      "Examinar...": "Browse...",
+      "Abrir Cola Windows": "Open Queue",
+      "Click para alternar": "Click to toggle",
+      "Sensores HW": "HW Sensors",
+      "Procesador": "Processor",
+      "En vivo": "Live",
+      "Bajada": "Down",
+      "Subida": "Up",
+      "% en uso": "% in use",
+      "Cargando unidades...": "Loading drives...",
+      "No se detectaron unidades.": "No drives detected.",
+      "Todos los archivos (*.*)": "All files (*.*)",
+      "Archivos PDF (*.pdf)": "PDF files (*.pdf)",
+      "Documentos (*.docx, *.doc, *.txt)": "Documents (*.docx, *.doc, *.txt)",
+      "Imágenes (*.png, *.jpg, *.jpeg)": "Pictures (*.png, *.jpg, *.jpeg)",
+      "Vídeos (*.mp4, *.mkv)": "Videos (*.mp4, *.mkv)",
+      "Código fuente (*.js, *.py, *.html)": "Source code (*.js, *.py, *.html)",
+      "Música y Audio (*.mp3, *.wav)": "Music & Audio (*.mp3, *.wav)",
+      "Nombre a buscar en la carpeta...": "File name to search in folder...",
+      "Portapapeles en espera de copiado...": "Clipboard waiting for copy...",
+      "El portapapeles está vacío.": "Clipboard is empty.",
+      "Volumen de Audio": "Audio Volume",
+      "Brillo de Pantalla": "Screen Brightness",
+      "Nivel de Batería": "Battery Level"
+    }
+  };
+
+  const tr = (key) => {
+    try {
+      const currentLang = (typeof window !== 'undefined' && window.config && window.config.language) || 'es';
+      if (currentLang === 'en' && translations.en && translations.en[key]) {
+        return translations.en[key];
+      }
+    } catch (_) {}
+    return key;
+  };
 
   return function initWidgetDashboard(options = {}) {
     const side = options.side || 'right'; // 'left' or 'right'
@@ -115,18 +180,18 @@
       quickaccess: (v) => {
         if (v.quickaccess === false) return '';
         const folders = [
-          { id: 'downloads', name: 'Descargas', badge: '📥' },
-          { id: 'documents', name: 'Documentos', badge: '📄' },
-          { id: 'desktop', name: 'Escritorio', badge: '🖥️' },
-          { id: 'pictures', name: 'Imágenes', badge: '🖼️' },
-          { id: 'music', name: 'Música', badge: '🎵' },
-          { id: 'videos', name: 'Vídeos', badge: '🎬' }
+          { id: 'downloads', name: tr('Descargas'), badge: '📥' },
+          { id: 'documents', name: tr('Documentos'), badge: '📄' },
+          { id: 'desktop', name: tr('Escritorio'), badge: '🖥️' },
+          { id: 'pictures', name: tr('Imágenes'), badge: '🖼️' },
+          { id: 'music', name: tr('Música'), badge: '🎵' },
+          { id: 'videos', name: tr('Vídeos'), badge: '🎬' }
         ];
         return `
         <div class="w-card" id="card-quick-access">
           <div class="w-head">
-            <span><span class="w-dot dot-cyan"></span>Acceso Rápido</span>
-            <span class="w-sub">Carpetas</span>
+            <span><span class="w-dot dot-cyan"></span>${tr('Acceso Rápido')}</span>
+            <span class="w-sub">${tr('Carpetas')}</span>
           </div>
           <div class="folder-list" id="quick-folders-list">
             ${folders.map(f => `
@@ -135,7 +200,7 @@
                   <img src="../../assets/folder.png" alt="Carpeta">
                   <span class="folder-badge-icon">${f.badge}</span>
                 </div>
-                <span class="folder-name">${f.name}</span>
+                <span class="folder-name">${tr(f.name)}</span>
                 <span class="folder-arrow">›</span>
               </div>
             `).join('')}
@@ -149,7 +214,7 @@
         return `
         <div class="w-card" id="card-clipboard">
           <div class="w-head">
-            <span><span class="w-dot dot-cyan"></span>Portapapeles</span>
+            <span><span class="w-dot dot-cyan"></span>${tr('Portapapeles')}</span>
             <div style="display: flex; align-items: center; gap: 5px;">
               <span class="w-sub" id="clip-count-badge">0 clips</span>
               <button class="cal-toggle-pill ${clipboardDrawerOpen ? 'is-open' : ''}" id="btn-toggle-clipboard" title="Desplegar u ocultar historial con miniaturas">
@@ -167,13 +232,13 @@
                 <div class="clip-preview-title" id="clip-preview-title"></div>
                 <div class="clip-preview-sub" id="clip-preview-sub"></div>
               </div>
-              <button class="w-action-btn clip-btn-recopy" id="btn-quick-recopy" title="Volver a copiar al portapapeles">Copiar</button>
+              <button class="w-action-btn clip-btn-recopy" id="btn-quick-recopy" title="Volver a copiar al portapapeles">${tr('Copiar')}</button>
             </div>
           </div>
           <div class="clipboard-drawer ${clipboardDrawerOpen ? 'is-open' : ''}" id="clipboard-drawer">
             <div class="clipboard-drawer-bar">
-              <span class="clipboard-drawer-title">Historial con Miniaturas</span>
-              <button class="w-action-btn clipboard-clear-btn" id="btn-clear-clipboard" title="Vaciar todo el historial">Vaciar</button>
+              <span class="clipboard-drawer-title">${tr('Portapapeles')}</span>
+              <button class="w-action-btn clipboard-clear-btn" id="btn-clear-clipboard" title="Vaciar todo el historial">${tr('Vaciar')}</button>
             </div>
             <div class="clipboard-drawer-scroll" id="clipboard-drawer-items"></div>
           </div>
@@ -187,7 +252,7 @@
         return `
         <div class="w-card" id="card-drives">
           <div class="w-head">
-            <span><span class="w-dot dot-cyan"></span>Dispositivos y Unidades</span>
+            <span><span class="w-dot dot-cyan"></span>${tr('Dispositivos y Unidades')}</span>
             <span class="w-sub" id="lbl-drives-count">${count}</span>
           </div>
           <div class="drives-list" id="drives-items-list">
@@ -207,7 +272,7 @@
         return `
         <div class="w-card" id="card-clock">
           <div class="w-head">
-            <span><span class="w-dot dot-cyan"></span>Hora & Fecha</span>
+            <span><span class="w-dot dot-cyan"></span>${tr('Hora & Fecha')}</span>
             <span class="w-sub" id="clock-month-year" title="Click para volver al mes actual" style="cursor: pointer;">CALENDARIO</span>
           </div>
           <div class="clock-banner">
@@ -239,7 +304,9 @@
           <div class="mini-calendar-drawer" id="mini-calendar-drawer">
             <div class="mini-calendar" id="mini-calendar" title="Click para abrir el calendario de Windows">
               <div class="cal-weekdays">
-                <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
+                ${((window.config && window.config.language) === 'en')
+                  ? '<span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>'
+                  : '<span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>'}
               </div>
               <div class="cal-days-grid" id="cal-days-grid"></div>
             </div>
@@ -253,7 +320,7 @@
         return `
         <div class="w-card" id="card-syscontrols">
           <div class="w-head">
-            <span><span class="w-dot dot-cyan"></span>Control & Batería</span>
+            <span><span class="w-dot dot-cyan"></span>${tr('Control & Batería')}</span>
             <span class="w-sub" id="sys-bat-badge">--%</span>
           </div>
           <div class="sys-ctrl-grid">
@@ -310,8 +377,8 @@
         return `
         <div class="w-card" id="card-ram">
           <div class="w-head">
-            <span><span class="w-dot dot-cyan"></span>Memoria RAM</span>
-            <button class="w-action-btn" id="btn-open-taskmgr" title="Abrir Administrador de Tareas (Ver procesos de Windows)">Procesos</button>
+            <span><span class="w-dot dot-cyan"></span>${tr('Memoria RAM')}</span>
+            <button class="w-action-btn" id="btn-open-taskmgr" title="Abrir Administrador de Tareas (Ver procesos de Windows)">${tr('Procesos')}</button>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: baseline;">
             <div class="w-huge"><span id="ram-used">0.0</span> <span style="font-size: 0.68rem; color: #00e5db;">GB</span></div>
@@ -322,7 +389,7 @@
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span class="w-sub">Total: <span id="ram-total" style="color: var(--w-text-main); font-weight: 350;">16.0 GB</span></span>
-            <button class="w-action-btn" id="btn-purge-ram">Liberar RAM</button>
+            <button class="w-action-btn" id="btn-purge-ram">${tr('Liberar RAM')}</button>
           </div>
         </div>
         `;
@@ -333,7 +400,7 @@
         return `
         <div class="w-card" id="card-thermals">
           <div class="w-head">
-            <span><span class="w-dot dot-orange"></span>Telemetría Térmica</span>
+            <span><span class="w-dot dot-orange"></span>${tr('Telemetría Térmica')}</span>
             <span class="w-sub" id="thermals-sensor-badge">Sensores HW</span>
           </div>
           <div class="dual-thermals-grid">
@@ -361,8 +428,8 @@
         return `
         <div class="w-card" id="card-cpu">
           <div class="w-head">
-            <span><span class="w-dot dot-yellow"></span>Procesadores Activos</span>
-            <span class="w-sub" id="cpu-speed-sub">Núcleos</span>
+            <span><span class="w-dot dot-yellow"></span>${tr('Procesadores Activos')}</span>
+            <span class="w-sub" id="cpu-speed-sub">${tr('Núcleos')}</span>
           </div>
           <div style="font-size: 0.68rem; font-weight: 350; color: var(--w-text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="cpu-name">Procesador</div>
           <div class="cores-grid" id="cores-container"></div>
@@ -375,7 +442,7 @@
         return `
         <div class="w-card" id="card-network">
           <div class="w-head">
-            <span><span class="w-dot dot-blue"></span>Tráfico de Red I/O</span>
+            <span><span class="w-dot dot-blue"></span>${tr('Tráfico de Red I/O')}</span>
             <span class="w-sub" id="net-badge">En vivo</span>
           </div>
           <div style="display: flex; justify-content: space-between;">
@@ -397,7 +464,7 @@
         return `
         <div class="w-card" id="card-printer">
           <div class="w-head">
-            <span><span class="w-dot dot-cyan"></span>Impresoras & Escáneres</span>
+            <span><span class="w-dot dot-cyan"></span>${tr('Impresoras & Escáneres')}</span>
             <span class="w-sub" id="printer-online-badge" style="color: #00e5db;">Online</span>
           </div>
           <div style="font-size: 0.66rem; font-weight: 350; color: var(--w-text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">HP LaserJet Pro MFP 4102dw</div>
@@ -409,7 +476,7 @@
             <div class="w-bar-fill" id="printer-progress-bar" style="width: 0%; background: #00e5db;"></div>
           </div>
           <div style="display: flex; justify-content: flex-end; margin-top: 5px;">
-            <button class="w-action-btn" id="btn-open-print-queue">Abrir Cola Windows</button>
+            <button class="w-action-btn" id="btn-open-print-queue">${tr('Abrir Cola Windows')}</button>
           </div>
         </div>
         `;
@@ -420,8 +487,8 @@
         return `
         <div class="w-card" id="card-conn">
           <div class="w-head">
-            <span><span class="w-dot dot-cyan"></span>Conectividad & Red</span>
-            <span class="w-sub" id="conn-hint">Click para alternar</span>
+            <span><span class="w-dot dot-cyan"></span>${tr('Conectividad & Red')}</span>
+            <span class="w-sub" id="conn-hint">${tr('Click para alternar')}</span>
           </div>
           <div class="connectivity-grid">
             <div class="conn-pill ${lastRadioState.wifi ? 'is-active' : 'is-inactive'}" id="btn-toggle-wifi" title="Clic para activar o desactivar Wi-Fi">
@@ -444,14 +511,14 @@
         return `
         <div class="w-card" id="card-search">
           <div class="w-head">
-            <span><span class="w-dot dot-cyan"></span>Buscador Rápido</span>
-            <button class="w-action-btn" id="btn-do-search" style="padding: 2px 9px; font-size: 0.6rem; background: var(--accent); color: #0c0f14; font-weight: 400; border-color: var(--accent);" title="Abrir búsqueda en Windows">Buscar</button>
+            <span><span class="w-dot dot-cyan"></span>${tr('Buscador Rápido')}</span>
+            <button class="w-action-btn" id="btn-do-search" style="padding: 2px 9px; font-size: 0.6rem; background: var(--accent); color: #0c0f14; font-weight: 400; border-color: var(--accent);" title="Abrir búsqueda en Windows">${tr('Buscar')}</button>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; margin-bottom: 5px;">
             <div style="font-size: 0.6rem; color: var(--w-text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 175px;" id="current-search-folder" title="${folder}">
               <img src="../../assets/folder.png" style="width: 13px; height: 13px; vertical-align: -2px; margin-right: 3px;" alt="📁"> <span style="color: #00e5db;">${folderName}</span>
             </div>
-            <button class="w-action-btn" id="btn-browse-folder-widget" style="padding: 1px 6px; font-size: 0.55rem;">Examinar...</button>
+            <button class="w-action-btn" id="btn-browse-folder-widget" style="padding: 1px 6px; font-size: 0.55rem;">${tr('Examinar...')}</button>
           </div>
           <select class="filter-select" id="search-filter-select">
             <option value="all">Todos los archivos (*.*)</option>
@@ -495,6 +562,8 @@
     function updateClock() {
       if (!document.getElementById('card-clock')) return;
       const now = new Date();
+      const currentLang = (typeof window !== 'undefined' && window.config && window.config.language) || 'es';
+      const isEn = currentLang === 'en';
       const timeEl = document.getElementById('clock-time');
       const dayEl = document.getElementById('clock-day-name');
       const dateEl = document.getElementById('clock-date');
@@ -502,14 +571,16 @@
       const daysGridEl = document.getElementById('cal-days-grid');
 
       if (timeEl) timeEl.textContent = now.toTimeString().split(' ')[0];
-      if (dayEl) dayEl.textContent = now.toLocaleDateString('es-ES', { weekday: 'short' }).toUpperCase();
-      if (dateEl) dateEl.textContent = `DÍA ${now.getDate()}`;
+      if (dayEl) dayEl.textContent = now.toLocaleDateString(isEn ? 'en-US' : 'es-ES', { weekday: 'short' }).toUpperCase();
+      if (dateEl) dateEl.textContent = isEn ? `DAY ${now.getDate()}` : `DÍA ${now.getDate()}`;
 
       const viewDate = new Date(now.getFullYear(), now.getMonth() + calMonthOffset, 1);
       if (monthYearEl) {
-        const mName = viewDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+        const mName = viewDate.toLocaleDateString(isEn ? 'en-US' : 'es-ES', { month: 'long', year: 'numeric' });
         monthYearEl.textContent = (calMonthOffset !== 0 ? '◀ ' : '') + mName.toUpperCase() + (calMonthOffset !== 0 ? ' ▶' : '');
-        monthYearEl.title = calMonthOffset !== 0 ? 'Click para volver al mes actual' : 'Calendario mensual';
+        monthYearEl.title = calMonthOffset !== 0 
+          ? (isEn ? 'Click to return to current month' : 'Click para volver al mes actual')
+          : (isEn ? 'Monthly calendar' : 'Calendario mensual');
       }
 
       const isCurrentMonth = (calMonthOffset === 0);
