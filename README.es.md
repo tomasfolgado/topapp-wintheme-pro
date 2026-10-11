@@ -1,15 +1,32 @@
 # TopApp WinTheme Pro
 
 > Suite modular de personalización y productividad para Windows 10 y 11.  
-> Autor: Tomás Folgado.
+> Autor: Tomás Folgado.  
+> 🌐 *Idioma / Language:* **Español** | [English](README.md)
 
-[![Descargar para Windows](https://img.shields.io/badge/Descargar%20para%20Windows-Setup%20v2.4.0%20(.exe)-00e5db?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
+[![Descargar para Windows](https://img.shields.io/badge/Descargar%20para%20Windows-Setup%20v2.4.0%20%28.exe%29-00e5db?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
 
-[![Versión](https://img.shields.io/github/v/release/tomasfolgado/topapp-wintheme-pro?color=00e5db&label=versi%C3%B3n)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
+[![Versión](https://img.shields.io/badge/versi%C3%B3n-v2.4.0-00e5db.svg)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
 [![Descargas](https://img.shields.io/github/downloads/tomasfolgado/topapp-wintheme-pro/total?color=ff7043&label=descargas)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases)
 [![Licencia](https://img.shields.io/badge/licencia-MIT-00e5db.svg)](LICENSE)
-[![Plataforma](https://img.shields.io/badge/plataforma-Windows%2010%20%7C%2011-blue.svg)]()
+[![Plataforma](https://img.shields.io/badge/plataforma-Windows%2010%20%7C%2011-0078d4.svg)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
 [![Electron](https://img.shields.io/badge/Electron-44.5.1-47848F.svg)](https://www.electronjs.org/)
+
+---
+
+## 📸 Interfaz y Capturas de Pantalla
+
+| Barra Dock y Widgets Flotantes | Panel de Control (Hub) |
+|:---:|:---:|
+| <img src="screenshots/screenshot1.jpg" width="450" alt="TopApp Widgets de Escritorio"> | <img src="screenshots/screenshot2.jpg" width="450" alt="Panel de Control Hub"> |
+
+| Cajones de Escritorio (Fences) | Telemetría y Personalización |
+|:---:|:---:|
+| <img src="screenshots/screenshot3.jpg" width="450" alt="Cajones de Escritorio"> | <img src="screenshots/screenshot4.jpg" width="450" alt="Telemetría y Ajustes"> |
+
+<p align="center">
+  <img src="screenshots/screenshot5.jpg" width="750" alt="TopApp WinTheme Pro Vista General">
+</p>
 
 ---
 

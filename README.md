@@ -4,13 +4,29 @@
 > Author: Tomás Folgado.  
 > 🌐 *Language / Idioma:* **English** | [Español](README.es.md)
 
-[![Download for Windows](https://img.shields.io/badge/Download%20for%20Windows-Setup%20v2.4.0%20(.exe)-00e5db?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
+[![Download for Windows](https://img.shields.io/badge/Download%20for%20Windows-Setup%20v2.4.0%20%28.exe%29-00e5db?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
 
-[![Version](https://img.shields.io/github/v/release/tomasfolgado/topapp-wintheme-pro?color=00e5db&label=version)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
+[![Version](https://img.shields.io/badge/version-v2.4.0-00e5db.svg)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/tomasfolgado/topapp-wintheme-pro/total?color=ff7043&label=downloads)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases)
 [![License](https://img.shields.io/badge/license-MIT-00e5db.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-blue.svg)]()
+[![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078d4.svg)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
 [![Electron](https://img.shields.io/badge/Electron-44.5.1-47848F.svg)](https://www.electronjs.org/)
+
+---
+
+## 📸 Interface & Screenshots
+
+| Floating Dock & Widgets | Control Panel (Hub) |
+|:---:|:---:|
+| <img src="screenshots/screenshot1.jpg" width="450" alt="TopApp Desktop Widgets"> | <img src="screenshots/screenshot2.jpg" width="450" alt="Control Panel Hub"> |
+
+| Desktop Fences | Telemetry & Customization |
+|:---:|:---:|
+| <img src="screenshots/screenshot3.jpg" width="450" alt="Desktop Fences"> | <img src="screenshots/screenshot4.jpg" width="450" alt="Telemetry & Customization"> |
+
+<p align="center">
+  <img src="screenshots/screenshot5.jpg" width="750" alt="TopApp WinTheme Pro Overview">
+</p>
 
 ---
 
