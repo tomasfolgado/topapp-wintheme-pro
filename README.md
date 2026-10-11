@@ -3,10 +3,22 @@
 > Suite modular de personalización y productividad para Windows 10 y 11.  
 > Autor: Tomás Folgado.
 
+[![Descargar para Windows](https://img.shields.io/badge/Descargar%20para%20Windows-Setup%20v2.4.0%20(.exe)-00e5db?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
+
+[![Versión](https://img.shields.io/github/v/release/tomasfolgado/topapp-wintheme-pro?color=00e5db&label=versi%C3%B3n)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
+[![Descargas](https://img.shields.io/github/downloads/tomasfolgado/topapp-wintheme-pro/total?color=ff7043&label=descargas)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases)
 [![Licencia](https://img.shields.io/badge/licencia-MIT-00e5db.svg)](LICENSE)
 [![Plataforma](https://img.shields.io/badge/plataforma-Windows%2010%20%7C%2011-blue.svg)]()
 [![Electron](https://img.shields.io/badge/Electron-44.5.1-47848F.svg)](https://www.electronjs.org/)
-[![Versión](https://img.shields.io/badge/versión-2.4.0-ff7043.svg)]()
+
+---
+
+## Descarga e Instalación Rápida
+
+1. Descarga el paquete de instalación ejecutable:  
+   👉 **[TopApp WinTheme Pro Setup 2.4.0.exe (Descarga Directa)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)**
+2. Ejecuta el archivo descargado y sigue los sencillos pasos del instalador.
+3. El programa creará automáticamente sus accesos directos y estará listo para usarse.
 
 ---
 
@@ -48,12 +60,8 @@
 
 ---
 
-## Instalación y Ejecución
+## Ejecución desde Código Fuente (Desarrolladores)
 
-### Descarga del Instalador
-El paquete de instalación ejecutable para Windows está disponible en la sección de [Releases](https://github.com/tomasfolgado/topapp-wintheme-pro/releases).
-
-### Ejecución desde Código Fuente
 Requisitos: Windows 10/11 x64 y Node.js 18 o superior.
 
 ```bash
