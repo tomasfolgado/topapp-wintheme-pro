@@ -1,0 +1,33 @@
+; TopApp WinTheme Pro - Tema Minimal Editorial para Windows 10 / 11
+; Inspirado en Ana Tochka Design (Charcoal Slate & Electric Cyan)
+[Theme]
+DisplayName=TopApp - Minimal Editorial Tochka
+ThemeId={9B3C8421-4A12-4C10-9E11-F091A80E65D7}
+
+[Control Panel\Desktop]
+Wallpaper=%USERPROFILE%\Pictures\TopApp-WinTheme\tochka_slate_4k.jpg
+TileWallpaper=0
+WallpaperStyle=10
+Pattern=
+
+[VisualStyles]
+Path=%SystemRoot%\resources\themes\Aero\Aero.msstyles
+ColorStyle=NormalColor
+Size=NormalSize
+AutoColorization=0
+ColorizationColor=0xC4dbe500
+
+[Control Panel\Colors]
+ActiveTitle=0 229 219
+InactiveTitle=35 38 46
+Hilight=0 229 219
+HilightText=0 0 0
+HotTrackingColor=0 229 219
+MenuHilight=0 229 219
+MenuText=240 240 240
+Window=24 27 34
+WindowText=255 255 255
+Background=24 27 34
+
+[MasterThemeSelector]
+MTSM=DABABCDD

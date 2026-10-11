@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TopApp Cajón de Escritorio Pro</title>
+  <style>
+    :root {
+      --fence-opacity: 0.72;
+      --fence-blur: 20px;
+      --fence-icon-size: 44px;
+      --fence-icon-gap: 10px;
+      --accent: #00e5db;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+      background: transparent;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      font-family: 'Segoe UI Variable Text', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 400;
+      padding: 4px;
+    }
+    .fence-container {
+      width: 100%;
+      height: 100%;
+      background: rgba(18, 22, 30, var(--fence-opacity));
+      backdrop-filter: blur(var(--fence-blur)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--fence-blur)) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      box-shadow: none !important;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      transition: border-color 0.2s ease;
+    }
+    .fence-container:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .fence-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 12px;
+      background: transparent;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      -webkit-app-region: drag;
+      cursor: grab;
+      z-index: 10;
+    }
+    .fence-header.is-pinned-locked {
+      -webkit-app-region: no-drag !important;
+      cursor: default !important;
+    }
+    .fence-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      -webkit-app-region: no-drag;
+    }
+    .fence-title-text {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: #f1f5f9;
+      cursor: pointer;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+    .fence-title-text:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .fence-title-input {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: #fff;
+      background: #0c0f14;
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      padding: 2px 6px;
+      outline: none;
+      display: none;
+    }
+    .fence-actions {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      -webkit-app-region: no-drag;
+    }
+    .fence-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.65);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: all 0.12s ease;
+    }
+    .fence-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+    }
+    .fence-btn.active-pin {
+      color: #00e5db;
+      background: rgba(0, 229, 219, 0.18);
+      box-shadow: 0 0 8px rgba(0, 229, 219, 0.25);
+    }
+    
+    /* Body & Invisible Grid Placement */
+    .fence-body {
+      flex: 1;
+      padding: 8px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      min-height: 140px;
+    }
+    .fence-body::-webkit-scrollbar { width: 3px; }
+    .fence-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 2px; }
+
+    .fence-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      gap: 3px;
+      position: absolute;
+      width: calc(var(--fence-icon-size) + 24px);
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: background 0.12s ease, border-color 0.12s ease, left 0.15s ease-out, top 0.15s ease-out;
+      user-select: none;
+    }
+    .fence-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .fence-item.selected {
+      background: rgba(0, 229, 219, 0.22) !important;
+      border-color: rgba(0, 229, 219, 0.6) !important;
+      box-shadow: 0 0 10px rgba(0, 229, 219, 0.35) !important;
+    }
+    .lasso-selection-box {
+      position: absolute;
+      border: 1px solid var(--accent, #00e5db);
+      background: rgba(0, 229, 219, 0.16);
+      border-radius: 4px;
+      pointer-events: none;
+      display: none;
+      z-index: 1200;
+    }
+    .fence-item.is-dragging {
+      opacity: 0.85;
+      z-index: 999;
+      cursor: grabbing;
+      transition: none !important;
+    }
+    .fence-squircle {
+      width: var(--fence-icon-size);
+      height: var(--fence-icon-size);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+      position: relative;
+      background: #1c2230;
+      overflow: hidden;
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+    .fence-squircle img {
+      width: 72%;
+      height: 72%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    .fence-title-text {
+      color: var(--fence-title-color, #ffffff);
+      transition: color 0.15s ease;
+    }
+    .fence-label {
+      font-size: 0.58rem;
+      font-weight: var(--fence-label-weight, 400);
+      color: var(--fence-label-color, #e2e8f0);
+      text-shadow: var(--fence-label-shadow, 0 1px 3px rgba(0, 0, 0, 0.9));
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+      cursor: text;
+      padding: 1px 3px;
+      border-radius: 3px;
+      transition: color 0.15s ease, text-shadow 0.15s ease;
+    }
+    .fence-label:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--fence-label-color, #fff);
+    }
+    .rename-item-input {
+      font-size: 0.58rem;
+      font-weight: 400;
+      color: #fff;
+      background: #0c0f14;
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+      padding: 1px 3px;
+      width: 100%;
+      outline: none;
+      text-align: center;
+    }
+    .drop-hint {
+      position: absolute;
+      inset: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.65rem;
+      font-weight: 400;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    /* Mini Settings Panel */
+    .mini-settings {
+      position: absolute;
+      top: 36px;
+      right: 8px;
+      background: rgba(18, 22, 32, 0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 10px;
+      padding: 10px 14px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 229, 219, 0.15);
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 2000;
+      font-size: 0.64rem;
+      color: #cbd5e1;
+      width: 320px;
+      max-width: calc(100% - 16px);
+      max-height: calc(100vh - 44px);
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .mini-settings::-webkit-scrollbar { width: 3px; }
+    .mini-settings::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 2px; }
+    .mini-settings.active {
+      display: flex;
+    }
+    .mini-settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 2px;
+    }
+    .mini-settings-title {
+      font-weight: 600;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.68rem;
+    }
+    .mini-close-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 1px 5px;
+      border-radius: 4px;
+      transition: all 0.12s ease;
+    }
+    .mini-close-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+    .mini-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 14px;
+      align-items: start;
+    }
+    .mini-col {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .mini-control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .mini-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mini-control-group input[type="range"] {
+      width: 100%;
+      height: 4px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .mini-action-btn {
+      background: rgba(0, 229, 219, 0.12);
+      border: 1px solid rgba(0, 229, 219, 0.35);
+      color: var(--accent);
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 0.62rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.15s ease;
+      margin-top: 4px;
+      text-align: center;
+      width: 100%;
+    }
+    .mini-action-btn:hover {
+      background: rgba(0, 229, 219, 0.25);
+      color: #fff;
+    }
+
+    /* Context Menu */
+    .fence-context-menu {
+      position: fixed;
+      display: none;
+      background: #141824;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+      z-index: 2500;
+      min-width: 175px;
+      font-size: 0.65rem;
+      color: #e2e8f0;
+    }
+    .fence-context-menu.active {
+      display: flex;
+      flex-direction: column;
+    }
+    .ctx-item {
+      padding: 6px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: background 0.1s ease;
+    }
+    .ctx-item:hover {
+      background: rgba(0, 229, 219, 0.2);
+      color: #fff;
+    }
+    .ctx-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 3px 0;
+    }
+    .ctx-danger:hover {
+      background: rgba(239, 68, 68, 0.22);
+      color: #f87171;
+    }
+  </style>
+</head>
+<body>
+  <div class="fence-container" id="fence-root">
+    <div class="fence-header" id="fence-header-bar">
+      <div class="fence-title-wrap">
+        <img src="../../assets/folder.png" alt="Cajón" style="width: 16px; height: 16px; object-fit: contain; vertical-align: middle;">
+        <span class="fence-title-text" id="fence-title" title="Doble clic para cambiar nombre">Cajón</span>
+        <input type="text" class="fence-title-input" id="fence-title-input" />
+      </div>
+      <div class="fence-actions">
+        <button class="fence-btn" id="btn-toggle-settings" title="Ajustar tamaño, separación y opacidad">⚙</button>
+        <button class="fence-btn active-pin" id="btn-pin" title="Fijado en escritorio (Modo Fondo)">📌</button>
+        <button class="fence-btn" id="btn-add-file" title="Añadir archivos o carpetas">+</button>
+        <button class="fence-btn" id="btn-close" title="Cerrar cajón">✕</button>
+      </div>
+    </div>
+
+    <!-- Mini Settings Dropdown -->
+    <div class="mini-settings" id="mini-settings-panel">
+      <div class="mini-settings-header">
+        <div class="mini-settings-title">⚙ Ajustes del Cajón</div>
+        <button class="mini-close-btn" id="btn-close-mini-settings" title="Cerrar ajustes">✕</button>
+      </div>
+
+      <div class="mini-grid-2">
+        <div class="mini-col">
+          <div class="mini-control-group">
+            <div class="mini-row">
+              <span>Opacidad</span>
+              <span id="lbl-f-opacity" style="color: var(--accent); font-weight: 500;">72%</span>
+            </div>
+            <input type="range" id="slider-f-opacity" min="15" max="100" value="72" />
+          </div>
+
+          <div class="mini-control-group">
+            <div class="mini-row">
+              <span>Tamaño</span>
+              <span id="lbl-f-size" style="color: var(--accent); font-weight: 500;">44px</span>
+            </div>
+            <input type="range" id="slider-f-size" min="28" max="68" value="44" />
+          </div>
+        </div>
+
+        <div class="mini-col">
+          <div class="mini-control-group">
+            <div class="mini-row">
+              <span>Separación</span>
+              <span id="lbl-f-gap" style="color: var(--accent); font-weight: 500;">10px</span>
+            </div>
+            <input type="range" id="slider-f-gap" min="2" max="50" value="10" />
+          </div>
+
+          <div class="mini-control-group">
+            <div class="mini-row">
+              <span>Color Texto</span>
+            </div>
+            <div style="display: flex; gap: 4px; margin-top: 2px;">
+              <button type="button" class="btn-text-color" id="btn-text-white" style="flex: 1; padding: 3px 5px; font-size: 0.6rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.3); background: #ffffff; color: #000; cursor: pointer; font-weight: 600;">⚪ Blanco</button>
+              <button type="button" class="btn-text-color" id="btn-text-black" style="flex: 1; padding: 3px 5px; font-size: 0.6rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.3); background: #000000; color: #fff; cursor: pointer; font-weight: 600;">⚫ Negro</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="mini-action-btn" id="btn-realign-grid" title="Reorganizar todos los iconos en cuadrícula limpia">🗂️ Alinear en cuadrícula</button>
+    </div>
+
+    <!-- Right-click Context Menu -->
+    <div class="fence-context-menu" id="fence-ctx-menu">
+      <div class="ctx-item" id="ctx-open">📂 Abrir</div>
+      <div class="ctx-item" id="ctx-to-desktop">🖥️ Mover al Escritorio</div>
+      <div class="ctx-item" id="ctx-copy-to-desktop">📋 Copiar al Escritorio</div>
+      <div class="ctx-item" id="ctx-rename">✏️ Cambiar nombre</div>
+      <div class="ctx-item" id="ctx-align">🗂️ Alinear en cuadrícula</div>
+      <div class="ctx-item" id="ctx-show-folder">📍 Mostrar en Explorador</div>
+      <div class="ctx-item" id="ctx-copy-path">📋 Copiar ruta</div>
+      <div class="ctx-divider"></div>
+      <div class="ctx-item ctx-danger" id="ctx-delete">🗑️ Quitar del cajón</div>
+    </div>
+
+    <div class="fence-body" id="fence-items"></div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentFenceId = urlParams.get('fenceId');
+
+    let currentFence = null;
+    let fullConfig = null;
+    let activeContextIcon = null;
+
+    async function init() {
+      if (!window.topapp) return;
+      fullConfig = await window.topapp.getConfig();
+      currentFence = (fullConfig?.fences || []).find(f => f.id === currentFenceId) || fullConfig?.fences?.[0];
+      if (currentFence && !currentFenceId) {
+        currentFenceId = currentFence.id;
+      }
+
+      window.topapp.onConfigChanged((cfg) => {
+        fullConfig = cfg;
+        currentFence = (cfg?.fences || []).find(f => f.id === currentFenceId) || cfg?.fences?.[0];
+        if (currentFence && !currentFenceId) {
+          currentFenceId = currentFence.id;
+        }
+        applyStyles();
+        render();
+      });
+
+      applyStyles();
+      render();
+      setupEvents();
+      setupContextMenu();
+
+      if (window.topapp && window.topapp.onFenceRenameItem) {
+        window.topapp.onFenceRenameItem(({ iconId }) => {
+          const itemEl = document.querySelector(`.fence-item[data-id="${iconId}"]`);
+          const label = itemEl?.querySelector('.fence-label');
+          if (label) {
+            label.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+          }
+        });
+      }
+    }
+
+    function applyStyles() {
+      const r = document.documentElement;
+      const op = currentFence?.opacity != null ? currentFence.opacity : (fullConfig?.glassOpacity != null ? fullConfig.glassOpacity : 0.72);
+      const iconSize = currentFence?.iconSize || 44;
+      const iconGap = currentFence?.iconGap || 10;
+
+      r.style.setProperty('--fence-opacity', op);
+      r.style.setProperty('--fence-icon-size', iconSize + 'px');
+      r.style.setProperty('--fence-icon-gap', iconGap + 'px');
+
+      const rawTextCol = currentFence?.textColor || fullConfig?.iconTextColor || 'white';
+      const isBlack = rawTextCol === 'black' || rawTextCol === 'negro' || rawTextCol === '#000000';
+
+      if (isBlack) {
+        r.style.setProperty('--fence-label-color', '#0f172a');
+        r.style.setProperty('--fence-label-shadow', '0 1px 2px rgba(255, 255, 255, 0.9), 0 0 4px rgba(255, 255, 255, 0.8)');
+        r.style.setProperty('--fence-label-weight', '600');
+        r.style.setProperty('--fence-title-color', '#0f172a');
+      } else {
+        r.style.setProperty('--fence-label-color', '#ffffff');
+        r.style.setProperty('--fence-label-shadow', '0 1px 3px rgba(0, 0, 0, 0.95)');
+        r.style.setProperty('--fence-label-weight', '400');
+        r.style.setProperty('--fence-title-color', '#ffffff');
+      }
+
+      const btnWhite = document.getElementById('btn-text-white');
+      const btnBlack = document.getElementById('btn-text-black');
+      if (btnWhite && btnBlack) {
+        btnWhite.style.borderColor = isBlack ? 'rgba(255,255,255,0.2)' : 'var(--accent)';
+        btnWhite.style.boxShadow = isBlack ? 'none' : '0 0 6px var(--accent)';
+        btnBlack.style.borderColor = isBlack ? 'var(--accent)' : 'rgba(255,255,255,0.2)';
+        btnBlack.style.boxShadow = isBlack ? '0 0 6px var(--accent)' : 'none';
+      }
+
+      document.getElementById('slider-f-opacity').value = Math.round(op * 100);
+      document.getElementById('lbl-f-opacity').textContent = Math.round(op * 100) + '%';
+      document.getElementById('slider-f-size').value = iconSize;
+      document.getElementById('lbl-f-size').textContent = iconSize + 'px';
+      document.getElementById('slider-f-gap').value = iconGap;
+      document.getElementById('lbl-f-gap').textContent = iconGap + 'px';
+
+      const headerBar = document.getElementById('fence-header-bar');
+      if (currentFence?.isPinned) {
+        headerBar.classList.add('is-pinned-locked');
+      } else {
+        headerBar.classList.remove('is-pinned-locked');
+      }
+    }
+
+    async function saveConfigFences() {
+      if (!currentFence || !window.topapp) return;
+      const targetId = currentFence.id || currentFenceId;
+      const fences = fullConfig?.fences || [];
+      const idx = fences.findIndex(f => f.id === targetId);
+      if (idx !== -1) {
+        fences[idx] = currentFence;
+      } else {
+        fences.push(currentFence);
+      }
+      await window.topapp.saveConfig({ fences });
+    }
+
+    function getCellDimensions(size, gap) {
+      const s = size != null ? size : (currentFence?.iconSize || 44);
+      const g = gap != null ? gap : (currentFence?.iconGap != null ? currentFence.iconGap : 10);
+      const cellW = s + g + 24;
+      const cellH = s + g + 32;
+      return { cellW, cellH, iconSize: s, iconGap: g };
+    }
+
+    let selectedIconIds = new Set();
+    let isLassoing = false;
+    let lassoStartX = 0;
+    let lassoStartY = 0;
+
+    function findNextAvailableSlot() {
+      const { cellW, cellH } = getCellDimensions();
+      const body = document.getElementById('fence-items');
+      const bodyWidth = body.clientWidth || 340;
+      const cols = Math.max(1, Math.floor((bodyWidth - 16) / cellW));
+
+      const occupied = new Set();
+      (currentFence?.icons || []).forEach(ic => {
+        let c = ic.col;
+        let r = ic.row;
+        if (c == null && ic.x != null) c = Math.max(0, Math.round((ic.x - 10) / cellW));
+        if (r == null && ic.y != null) r = Math.max(0, Math.round((ic.y - 8) / cellH));
+        if (c != null && r != null) {
+          occupied.add(`${c},${r}`);
+        }
+      });
+
+      // Scan row by row, column by column (fills existing hole or appends to row/next row)
+      let r = 0;
+      while (true) {
+        for (let c = 0; c < cols; c++) {
+          if (!occupied.has(`${c},${r}`)) {
+            return {
+              col: c,
+              row: r,
+              x: 10 + c * cellW,
+              y: 8 + r * cellH
+            };
+          }
+        }
+        r++;
+      }
+    }
+
+    function updateSelectionUI() {
+      const items = document.querySelectorAll('.fence-item');
+      items.forEach(el => {
+        if (selectedIconIds.has(el.dataset.id)) {
+          el.classList.add('selected');
+        } else {
+          el.classList.remove('selected');
+        }
+      });
+    }
+
+    function alignGrid() {
+      const body = document.getElementById('fence-items');
+      const { cellW, cellH } = getCellDimensions();
+      const bodyWidth = body.clientWidth || 340;
+      const cols = Math.max(1, Math.floor((bodyWidth - 20) / cellW));
+
+      (currentFence?.icons || []).forEach((ic, index) => {
+        ic.col = index % cols;
+        ic.row = Math.floor(index / cols);
+        ic.x = 10 + ic.col * cellW;
+        ic.y = 8 + ic.row * cellH;
+      });
+      render();
+      saveConfigFences();
+    }
+
+    function render() {
+      if (!currentFence) return;
+      document.getElementById('fence-title').textContent = currentFence.title || 'Cajón';
+      const pinBtn = document.getElementById('btn-pin');
+      const headerBar = document.getElementById('fence-header-bar');
+
+      if (currentFence.isPinned) {
+        pinBtn.classList.add('active-pin');
+        pinBtn.title = 'Fijado en el fondo del escritorio (Bloqueado)';
+        headerBar.classList.add('is-pinned-locked');
+      } else {
+        pinBtn.classList.remove('active-pin');
+        pinBtn.title = 'Flotante libre (Haz clic para fijar en el fondo)';
+        headerBar.classList.remove('is-pinned-locked');
+      }
+
+      const body = document.getElementById('fence-items');
+      const icons = currentFence.icons || [];
+
+      if (!icons.length) {
+        body.innerHTML = `
+          <div id="lasso-box" class="lasso-selection-box"></div>
+          <div class="drop-hint">
+            Arrastra carpetas o archivos aquí desde Windows o pulsa + para añadirlos
+          </div>
+        `;
+        return;
+      }
+
+      // Compute invisible grid coordinates with dynamic iconSize and iconGap
+      const { cellW, cellH } = getCellDimensions();
+      const bodyWidth = body.clientWidth || 340;
+      const cols = Math.max(1, Math.floor((bodyWidth - 16) / cellW));
+
+      icons.forEach((ic, index) => {
+        if (ic.col == null || ic.row == null) {
+          if (ic.x != null && ic.y != null) {
+            ic.col = Math.max(0, Math.round((ic.x - 10) / cellW));
+            ic.row = Math.max(0, Math.round((ic.y - 8) / cellH));
+          } else {
+            ic.col = index % cols;
+            ic.row = Math.floor(index / cols);
+          }
+        }
+        ic.x = 10 + ic.col * cellW;
+        ic.y = 8 + ic.row * cellH;
+      });
+
+      body.innerHTML = `
+        <div id="lasso-box" class="lasso-selection-box"></div>
+      ` + icons.map(ic => {
+        const isSelected = selectedIconIds.has(ic.id);
+        const cleanName = (ic.name || '').replace(/\.lnk$/i, '');
+        const iconSrc = (ic.iconUrl && !ic.iconUrl.includes('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmci'))
+          ? ic.iconUrl
+          : '../../assets/folder.png';
+        return `
+        <div class="fence-item ${isSelected ? 'selected' : ''}" data-id="${ic.id}" style="left: ${ic.x}px; top: ${ic.y}px;" title="${ic.name}" draggable="true">
+          <div class="fence-squircle" style="background: ${ic.color || '#1e2430'};">
+            <img src="${iconSrc}" alt="" style="width: 76%; height: 76%; object-fit: contain;">
+          </div>
+          <span class="fence-label" title="Doble clic para cambiar nombre">${cleanName}</span>
+        </div>
+        `;
+      }).join('');
+
+      // Lasso / Marquee selection on background
+      body.onmousedown = (e) => {
+        if (e.target === body || e.target.id === 'fence-items' || e.target.classList.contains('drop-hint')) {
+          if (!e.ctrlKey && !e.metaKey) {
+            selectedIconIds.clear();
+            updateSelectionUI();
+          }
+          isLassoing = true;
+          const bodyRect = body.getBoundingClientRect();
+          lassoStartX = e.clientX - bodyRect.left + body.scrollLeft;
+          lassoStartY = e.clientY - bodyRect.top + body.scrollTop;
+
+          const lassoBox = document.getElementById('lasso-box');
+          if (lassoBox) {
+            lassoBox.style.left = lassoStartX + 'px';
+            lassoBox.style.top = lassoStartY + 'px';
+            lassoBox.style.width = '0px';
+            lassoBox.style.height = '0px';
+            lassoBox.style.display = 'block';
+          }
+        }
+      };
+
+      body.querySelectorAll('.fence-item').forEach(el => {
+        const id = el.dataset.id;
+        const iconData = icons.find(i => i.id === id);
+        if (!iconData) return;
+
+        // 1. Single click: handles single or Ctrl multi-selection
+        el.onclick = (e) => {
+          e.stopPropagation();
+          if (e.ctrlKey || e.metaKey) {
+            if (selectedIconIds.has(id)) {
+              selectedIconIds.delete(id);
+            } else {
+              selectedIconIds.add(id);
+            }
+          } else {
+            selectedIconIds.clear();
+            selectedIconIds.add(id);
+          }
+          updateSelectionUI();
+        };
+
+        // 2. Double click opens the folder or file in Windows
+        el.ondblclick = (e) => {
+          if (e.target.classList.contains('fence-label') || e.target.classList.contains('rename-item-input')) return;
+          e.stopPropagation();
+          if (iconData.path && window.topapp) {
+            window.topapp.launchApp(iconData.path);
+          }
+        };
+
+        // 3. Double click on the text label renames it
+        const label = el.querySelector('.fence-label');
+        if (label) {
+          label.ondblclick = (e) => {
+            e.stopPropagation();
+            const currentName = iconData.name || label.textContent;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'rename-item-input';
+            input.value = currentName;
+            label.replaceWith(input);
+            input.focus();
+            input.select();
+
+            const finishRename = async () => {
+              const newName = input.value.trim() || currentName;
+              iconData.name = newName;
+              await saveConfigFences();
+              render();
+            };
+
+            input.onblur = finishRename;
+            input.onkeydown = (ev) => {
+              if (ev.key === 'Enter') finishRename();
+              if (ev.key === 'Escape') render();
+            };
+          };
+        }
+
+        // 4. Right-click Native Context Menu
+        el.oncontextmenu = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          activeContextIcon = iconData;
+          if (!selectedIconIds.has(id)) {
+            selectedIconIds.clear();
+            selectedIconIds.add(id);
+            updateSelectionUI();
+          }
+
+          if (window.topapp && window.topapp.showFenceContextMenu) {
+            window.topapp.showFenceContextMenu({
+              fenceId: currentFenceId,
+              iconId: iconData.id,
+              filePath: iconData.path,
+              fileName: iconData.name
+            });
+          } else {
+            const menu = document.getElementById('fence-ctx-menu');
+            menu.style.left = Math.min(window.innerWidth - 185, e.clientX) + 'px';
+            menu.style.top = Math.min(window.innerHeight - 200, e.clientY) + 'px';
+            menu.classList.add('active');
+          }
+        };
+
+        // Arrastre nativo hacia fuera (al escritorio u otra carpeta de Windows)
+        el.ondragstart = (e) => {
+          if (iconData.path && window.topapp && window.topapp.startDragItem) {
+            e.preventDefault();
+            window.topapp.startDragItem({
+              filePath: iconData.path,
+              fenceId: currentFenceId,
+              iconId: iconData.id
+            });
+          }
+        };
+
+        el.ondragend = (e) => {
+          if (iconData.path && window.topapp && window.topapp.endDragItem) {
+            window.topapp.endDragItem({
+              filePath: iconData.path,
+              fenceId: currentFenceId,
+              iconId: iconData.id
+            });
+          }
+        };
+
+        // 5. Drag & Move supporting single or multiple selected icons
+        el.onmousedown = (e) => {
+          if (e.button !== 0) return;
+          if (e.target.classList.contains('rename-item-input')) return;
+          e.stopPropagation();
+
+          if (e.ctrlKey || e.metaKey) {
+            if (selectedIconIds.has(id)) {
+              selectedIconIds.delete(id);
+            } else {
+              selectedIconIds.add(id);
+            }
+            updateSelectionUI();
+            return;
+          }
+
+          if (!selectedIconIds.has(id)) {
+            selectedIconIds.clear();
+            selectedIconIds.add(id);
+            updateSelectionUI();
+          }
+
+          const startMouseX = e.clientX;
+          const startMouseY = e.clientY;
+          const startPositions = new Map();
+
+          selectedIconIds.forEach(selId => {
+            const selEl = body.querySelector(`.fence-item[data-id="${selId}"]`);
+            const selIcon = icons.find(i => i.id === selId);
+            if (selEl && selIcon) {
+              startPositions.set(selId, {
+                origX: selIcon.x != null ? selIcon.x : selEl.offsetLeft,
+                origY: selIcon.y != null ? selIcon.y : selEl.offsetTop,
+                el: selEl,
+                iconData: selIcon
+              });
+            }
+          });
+
+          let hasMoved = false;
+
+          const onMouseMove = (moveEv) => {
+            const dx = moveEv.clientX - startMouseX;
+            const dy = moveEv.clientY - startMouseY;
+            if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
+            if (!hasMoved) return;
+
+            startPositions.forEach(({ origX, origY, el }) => {
+              el.classList.add('is-dragging');
+              el.style.left = Math.max(0, origX + dx) + 'px';
+              el.style.top = Math.max(0, origY + dy) + 'px';
+            });
+          };
+
+          const onMouseUp = async (upEv) => {
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', onMouseUp);
+
+            startPositions.forEach(({ el }) => {
+              el.classList.remove('is-dragging');
+            });
+
+            if (hasMoved) {
+              const dx = upEv.clientX - startMouseX;
+              const dy = upEv.clientY - startMouseY;
+              const { cellW, cellH } = getCellDimensions();
+
+              startPositions.forEach(({ origX, origY, iconData, el }) => {
+                const newX = Math.max(10, origX + dx);
+                const newY = Math.max(8, origY + dy);
+                iconData.col = Math.max(0, Math.round((newX - 10) / cellW));
+                iconData.row = Math.max(0, Math.round((newY - 8) / cellH));
+                iconData.x = 10 + iconData.col * cellW;
+                iconData.y = 8 + iconData.row * cellH;
+                el.style.left = iconData.x + 'px';
+                el.style.top = iconData.y + 'px';
+              });
+
+              await saveConfigFences();
+            }
+          };
+
+          window.addEventListener('mousemove', onMouseMove);
+          window.addEventListener('mouseup', onMouseUp);
+        };
+      });
+    }
+
+    // Global Lasso mouse handlers
+    window.addEventListener('mousemove', (e) => {
+      if (!isLassoing) return;
+      const body = document.getElementById('fence-items');
+      const lassoBox = document.getElementById('lasso-box');
+      if (!body || !lassoBox) return;
+
+      const bodyRect = body.getBoundingClientRect();
+      const currentX = e.clientX - bodyRect.left + body.scrollLeft;
+      const currentY = e.clientY - bodyRect.top + body.scrollTop;
+
+      const left = Math.min(lassoStartX, currentX);
+      const top = Math.min(lassoStartY, currentY);
+      const width = Math.abs(currentX - lassoStartX);
+      const height = Math.abs(currentY - lassoStartY);
+
+      lassoBox.style.left = left + 'px';
+      lassoBox.style.top = top + 'px';
+      lassoBox.style.width = width + 'px';
+      lassoBox.style.height = height + 'px';
+
+      const lassoRect = { left, top, right: left + width, bottom: top + height };
+
+      body.querySelectorAll('.fence-item').forEach(el => {
+        const itemL = el.offsetLeft;
+        const itemT = el.offsetTop;
+        const itemR = itemL + el.offsetWidth;
+        const itemB = itemT + el.offsetHeight;
+
+        const intersects = !(lassoRect.left > itemR || lassoRect.right < itemL || lassoRect.top > itemB || lassoRect.bottom < itemT);
+        if (intersects) {
+          selectedIconIds.add(el.dataset.id);
+        } else if (!e.ctrlKey && !e.metaKey) {
+          selectedIconIds.delete(el.dataset.id);
+        }
+      });
+      updateSelectionUI();
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isLassoing) {
+        isLassoing = false;
+        const lassoBox = document.getElementById('lasso-box');
+        if (lassoBox) lassoBox.style.display = 'none';
+      }
+    });
+
+    function setupContextMenu() {
+      const menu = document.getElementById('fence-ctx-menu');
+      document.addEventListener('click', (e) => {
+        if (!menu.contains(e.target)) menu.classList.remove('active');
+      });
+
+      // 1. Open
+      document.getElementById('ctx-open').onclick = () => {
+        menu.classList.remove('active');
+        if (activeContextIcon?.path && window.topapp) {
+          window.topapp.launchApp(activeContextIcon.path);
+        }
+      };
+
+      // 2. Move back to Desktop (supports all selected)
+      document.getElementById('ctx-to-desktop').onclick = async () => {
+        menu.classList.remove('active');
+        if (!selectedIconIds.size && activeContextIcon) selectedIconIds.add(activeContextIcon.id);
+        const toMove = (currentFence.icons || []).filter(i => selectedIconIds.has(i.id));
+        for (const item of toMove) {
+          if (item?.path && window.topapp?.moveItemToDesktop) {
+            await window.topapp.moveItemToDesktop(item.path);
+          }
+        }
+        currentFence.icons = (currentFence.icons || []).filter(i => !selectedIconIds.has(i.id));
+        selectedIconIds.clear();
+        await saveConfigFences();
+        render();
+      };
+
+      // 2.5 Copy to Desktop (creates a copy on Desktop, keeps original in Cajón)
+      const copyBtn = document.getElementById('ctx-copy-to-desktop');
+      if (copyBtn) {
+        copyBtn.onclick = async () => {
+          menu.classList.remove('active');
+          if (!selectedIconIds.size && activeContextIcon) selectedIconIds.add(activeContextIcon.id);
+          const toCopy = (currentFence.icons || []).filter(i => selectedIconIds.has(i.id));
+          for (const item of toCopy) {
+            if (item?.path && window.topapp?.copyItemToDesktop) {
+              await window.topapp.copyItemToDesktop(item.path);
+            }
+          }
+        };
+      }
+
+      // 3. Rename
+      document.getElementById('ctx-rename').onclick = () => {
+        menu.classList.remove('active');
+        if (!activeContextIcon) return;
+        const el = document.querySelector(`.fence-item[data-id="${activeContextIcon.id}"]`);
+        const label = el?.querySelector('.fence-label');
+        if (label) {
+          label.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+        }
+      };
+
+      // 3.5 Align Grid
+      const ctxAlign = document.getElementById('ctx-align');
+      if (ctxAlign) {
+        ctxAlign.onclick = () => {
+          menu.classList.remove('active');
+          alignGrid();
+        };
+      }
+
+      // 4. Show in Explorer
+      document.getElementById('ctx-show-folder').onclick = () => {
+        menu.classList.remove('active');
+        if (activeContextIcon?.path && window.topapp) {
+          window.topapp.showInFolder(activeContextIcon.path);
+        }
+      };
+
+      // 5. Copy Path
+      document.getElementById('ctx-copy-path').onclick = () => {
+        menu.classList.remove('active');
+        if (activeContextIcon?.path) {
+          navigator.clipboard.writeText(activeContextIcon.path);
+        }
+      };
+
+      // 6. Delete (supports all selected)
+      document.getElementById('ctx-delete').onclick = async () => {
+        menu.classList.remove('active');
+        if (!selectedIconIds.size && activeContextIcon) selectedIconIds.add(activeContextIcon.id);
+        currentFence.icons = (currentFence.icons || []).filter(i => !selectedIconIds.has(i.id));
+        selectedIconIds.clear();
+        await saveConfigFences();
+        render();
+      };
+    }
+
+    function setupEvents() {
+      // Editable Title
+      const titleSpan = document.getElementById('fence-title');
+      const titleInput = document.getElementById('fence-title-input');
+
+      const startEditing = () => {
+        titleInput.value = currentFence?.title || 'Cajón';
+        titleSpan.style.display = 'none';
+        titleInput.style.display = 'inline-block';
+        titleInput.focus();
+        titleInput.select();
+      };
+
+      const saveEditing = async () => {
+        const newTitle = titleInput.value.trim() || 'Cajón';
+        titleInput.style.display = 'none';
+        titleSpan.style.display = 'inline-block';
+        titleSpan.textContent = newTitle;
+        if (currentFence && window.topapp) {
+          currentFence.title = newTitle;
+          await saveConfigFences();
+        }
+      };
+
+      titleSpan.ondblclick = startEditing;
+      titleInput.onblur = saveEditing;
+      titleInput.onkeydown = (e) => {
+        if (e.key === 'Enter') saveEditing();
+        if (e.key === 'Escape') {
+          titleInput.style.display = 'none';
+          titleSpan.style.display = 'inline-block';
+        }
+      };
+
+      // Pin
+      document.getElementById('btn-pin').onclick = async () => {
+        const fid = currentFence?.id || currentFenceId;
+        if (window.topapp && fid) {
+          await window.topapp.togglePinFence(fid);
+        }
+      };
+
+      // Close
+      document.getElementById('btn-close').onclick = async () => {
+        const fid = currentFence?.id || currentFenceId;
+        if (window.topapp && fid) {
+          await window.topapp.deleteFence(fid);
+        }
+      };
+
+      // Settings toggle & foreground management
+      const settingsPanel = document.getElementById('mini-settings-panel');
+      const setSettingsOpen = async (open) => {
+        const fid = currentFence?.id || currentFenceId;
+        if (open) {
+          settingsPanel.classList.add('active');
+          if (window.topapp?.openFenceSettings && fid) {
+            await window.topapp.openFenceSettings(fid);
+          }
+        } else {
+          settingsPanel.classList.remove('active');
+          if (window.topapp?.closeFenceSettings && fid) {
+            await window.topapp.closeFenceSettings(fid);
+          }
+        }
+      };
+
+      document.getElementById('btn-toggle-settings').onclick = (e) => {
+        e.stopPropagation();
+        const isOpen = settingsPanel.classList.contains('active');
+        setSettingsOpen(!isOpen);
+      };
+
+      const btnCloseMini = document.getElementById('btn-close-mini-settings');
+      if (btnCloseMini) {
+        btnCloseMini.onclick = (e) => {
+          e.stopPropagation();
+          setSettingsOpen(false);
+        };
+      }
+
+      document.addEventListener('click', (e) => {
+        if (settingsPanel.classList.contains('active') && !settingsPanel.contains(e.target) && e.target.id !== 'btn-toggle-settings') {
+          setSettingsOpen(false);
+        }
+      });
+
+      window.addEventListener('beforeunload', () => {
+        if (settingsPanel.classList.contains('active')) {
+          const fid = currentFence?.id || currentFenceId;
+          if (window.topapp?.closeFenceSettings && fid) {
+            window.topapp.closeFenceSettings(fid);
+          }
+        }
+      });
+
+      // Settings Sliders with instant real-time icon separation
+      let saveFenceTimeout = null;
+      const saveFenceProps = () => {
+        const op = parseInt(document.getElementById('slider-f-opacity').value, 10) / 100;
+        const iconSize = parseInt(document.getElementById('slider-f-size').value, 10);
+        const iconGap = parseInt(document.getElementById('slider-f-gap').value, 10);
+
+        document.getElementById('lbl-f-opacity').textContent = Math.round(op * 100) + '%';
+        document.getElementById('lbl-f-size').textContent = iconSize + 'px';
+        document.getElementById('lbl-f-gap').textContent = iconGap + 'px';
+
+        document.documentElement.style.setProperty('--fence-opacity', op);
+        document.documentElement.style.setProperty('--fence-icon-size', iconSize + 'px');
+        document.documentElement.style.setProperty('--fence-icon-gap', iconGap + 'px');
+
+        if (currentFence) {
+          currentFence.opacity = op;
+          currentFence.iconSize = iconSize;
+          currentFence.iconGap = iconGap;
+
+          // Dynamically separate/reposition icons in real-time
+          const { cellW, cellH } = getCellDimensions(iconSize, iconGap);
+          (currentFence.icons || []).forEach(ic => {
+            if (ic.col == null) ic.col = Math.max(0, Math.round(((ic.x || 10) - 10) / cellW));
+            if (ic.row == null) ic.row = Math.max(0, Math.round(((ic.y || 8) - 8) / cellH));
+            ic.x = 10 + ic.col * cellW;
+            ic.y = 8 + ic.row * cellH;
+
+            const el = document.querySelector(`.fence-item[data-id="${ic.id}"]`);
+            if (el) {
+              el.style.left = ic.x + 'px';
+              el.style.top = ic.y + 'px';
+            }
+          });
+        }
+
+        clearTimeout(saveFenceTimeout);
+        saveFenceTimeout = setTimeout(async () => {
+          await saveConfigFences();
+        }, 150);
+      };
+
+      document.getElementById('slider-f-opacity').oninput = saveFenceProps;
+      document.getElementById('slider-f-size').oninput = saveFenceProps;
+      document.getElementById('slider-f-gap').oninput = saveFenceProps;
+
+      const btnWhite = document.getElementById('btn-text-white');
+      if (btnWhite) {
+        btnWhite.onclick = async () => {
+          if (currentFence) {
+            currentFence.textColor = 'white';
+            applyStyles();
+            await saveConfigFences();
+          }
+        };
+      }
+
+      const btnBlack = document.getElementById('btn-text-black');
+      if (btnBlack) {
+        btnBlack.onclick = async () => {
+          if (currentFence) {
+            currentFence.textColor = 'black';
+            applyStyles();
+            await saveConfigFences();
+          }
+        };
+      }
+
+      const realignBtn = document.getElementById('btn-realign-grid');
+      if (realignBtn) realignBtn.onclick = alignGrid;
+
+      // Add Files with Native Dialog
+      document.getElementById('btn-add-file').onclick = async () => {
+        if (window.topapp && currentFenceId) {
+          const chosen = await window.topapp.chooseFile();
+          if (chosen && chosen.length) {
+            currentFence.icons = currentFence.icons || [];
+            chosen.forEach((file, i) => {
+              const slot = findNextAvailableSlot();
+              currentFence.icons.push({
+                id: 'fic-' + Date.now() + '-' + i + '-' + Math.floor(Math.random() * 1000),
+                name: file.name,
+                path: file.path,
+                iconUrl: file.iconUrl,
+                color: '#1e2430',
+                col: slot.col,
+                row: slot.row,
+                x: slot.x,
+                y: slot.y
+              });
+            });
+            await saveConfigFences();
+            render();
+          }
+        }
+      };
+
+      // Drag and Drop: Moves physical files or folders from Desktop into the Cajón!
+      window.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      });
+      window.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0 && window.topapp) {
+          currentFence.icons = currentFence.icons || [];
+          for (let i = 0; i < e.dataTransfer.files.length; i++) {
+            const file = e.dataTransfer.files[i];
+            const realPath = window.topapp.getPathForFile ? window.topapp.getPathForFile(file) : (file.path || null);
+            if (!realPath) continue;
+
+            let finalPath = realPath;
+            let finalName = file.name;
+            let iconUrl = null;
+
+            // Move the file physically from Desktop to Cajón storage
+            if (window.topapp.moveItemToFence) {
+              const res = await window.topapp.moveItemToFence({
+                sourcePath: realPath,
+                fenceId: currentFenceId,
+                fenceTitle: currentFence?.title || 'Cajón'
+              });
+              if (res) {
+                finalPath = res.path;
+                finalName = res.name;
+                iconUrl = res.iconUrl;
+              }
+            } else {
+              try { iconUrl = await window.topapp.getIcon(realPath); } catch {}
+            }
+
+            // Deduplicate if already present
+            const existingIdx = currentFence.icons.findIndex(ic => ic.path && ic.path.toLowerCase() === finalPath.toLowerCase());
+            if (existingIdx !== -1) {
+              currentFence.icons[existingIdx] = {
+                ...currentFence.icons[existingIdx],
+                name: finalName,
+                path: finalPath,
+                iconUrl: iconUrl || currentFence.icons[existingIdx].iconUrl
+              };
+            } else {
+              const slot = findNextAvailableSlot();
+              currentFence.icons.push({
+                id: 'fic-' + Date.now() + '-' + i,
+                name: finalName,
+                path: finalPath,
+                iconUrl: iconUrl,
+                color: '#1e2430',
+                col: slot.col,
+                row: slot.row,
+                x: slot.x,
+                y: slot.y
+              });
+            }
+          }
+          await saveConfigFences();
+          render();
+        }
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>

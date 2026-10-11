@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TopApp Dock Flotante Pro</title>
+  <style>
+    :root {
+      --glass-blur: 16px;
+      --glass-opacity: 0.65;
+      --dock-icon-size: 42px;
+      --dock-icon-gap: 8px;
+      --accent: #00e5db;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    body {
+      background: transparent;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      height: 100vh;
+      width: 100vw;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+    body.is-top {
+      align-items: flex-start;
+    }
+    body.is-top .dock-island {
+      margin-top: 6px;
+      margin-bottom: 0;
+    }
+    body.is-top .dock-item {
+      transform-origin: top center;
+    }
+    body.is-top .tooltip {
+      top: auto;
+      bottom: -30px;
+    }
+    body.is-top .dock-wrapper.autohide-hidden {
+      transform: translateY(-85px);
+    }
+    .dock-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.1), opacity 0.25s ease;
+    }
+    .dock-wrapper.autohide-hidden {
+      transform: translateY(85px);
+      opacity: 0;
+      pointer-events: none;
+    }
+    body.dock-shrunk .dock-wrapper {
+      display: none !important;
+    }
+    .dock-trigger-zone {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 99;
+      cursor: pointer;
+    }
+    body.dock-shrunk .dock-trigger-zone {
+      display: flex;
+    }
+    body.is-top .dock-trigger-zone {
+      align-items: flex-start;
+      padding-top: 6px;
+    }
+    body:not(.is-top) .dock-trigger-zone {
+      align-items: flex-end;
+      padding-bottom: 6px;
+    }
+    .dock-peek-handle {
+      width: 65px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 3px;
+      transition: all 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+      box-shadow: 0 0 8px rgba(0, 229, 219, 0.25);
+    }
+    .dock-trigger-zone:hover .dock-peek-handle {
+      background: var(--accent);
+      width: 90px;
+      box-shadow: 0 0 14px var(--accent);
+    }
+    .dock-island {
+      display: flex;
+      align-items: center;
+      gap: var(--dock-icon-gap);
+      padding: 8px 14px;
+      border-radius: 20px;
+      margin-bottom: 6px;
+      transition: all 0.2s ease;
+    }
+    .dock-island.has-background {
+      background: rgba(18, 22, 30, var(--glass-opacity));
+      backdrop-filter: blur(var(--glass-blur)) saturate(190%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(190%);
+      border: none !important;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+    }
+    .dock-island.transparent-background {
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    .dock-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      cursor: pointer;
+      transform-origin: bottom center;
+      transition: transform 0.15s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+    }
+    .dock-squircle {
+      width: var(--dock-icon-size);
+      height: var(--dock-icon-size);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+      background: #1e2430;
+    }
+    .dock-squircle img {
+      width: 72%;
+      height: 72%;
+      object-fit: contain;
+      image-rendering: -webkit-optimize-contrast;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+    .dock-dot {
+      width: 4px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-top: 4px;
+      box-shadow: 0 0 6px var(--accent);
+    }
+    .dock-btn-action {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      border-radius: 10px;
+      background: rgba(24, 28, 38, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      margin: 0 3px;
+    }
+    .dock-btn-action:hover {
+      background: rgba(0, 229, 219, 0.3);
+      border-color: var(--accent, #00e5db);
+      color: var(--accent, #00e5db);
+      transform: scale(1.12);
+    }
+    .tooltip {
+      position: absolute;
+      top: -30px;
+      background: rgba(10, 12, 16, 0.95);
+      color: #fff;
+      font-size: 0.65rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: all 0.15s ease;
+      z-index: 100;
+    }
+    .dock-item:hover .tooltip {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .win-arrow-badge {
+      position: absolute;
+      bottom: 2px;
+      left: 2px;
+      width: 12px;
+      height: 12px;
+      background-color: #ffffff;
+      border-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%230284c7' d='M13.5 8.5L8.5 3.5V6C4.5 6 2 8 1 13.5c1.8-2.5 4-3.5 7.5-3.5v2.5l5-4z'/%3E%3C/svg%3E");
+      background-size: 9px 9px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  </style>
+</head>
+<body>
+  <div class="dock-trigger-zone" id="dock-trigger" title="Mueve el ratón aquí para abrir el Dock">
+    <div class="dock-peek-handle"></div>
+  </div>
+  <div class="dock-wrapper" id="dock-wrap">
+    <div class="dock-island has-background" id="dock-shelf"></div>
+  </div>
+
+  <script>
+    const SVGS = {
+      finder: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>',
+      terminal: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
+      code: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+      chrome: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>',
+      spotify: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 11.5c3.5-1 6.5-.5 9 1"/><path d="M7 14c3-1 6-.5 8.5 1"/><path d="M9 9c4-1 8-.5 10.5 1"/></svg>',
+      settings: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
+    };
+
+    let config = null;
+
+    async function init() {
+      if (window.topapp) {
+        config = await window.topapp.getConfig();
+        window.topapp.onConfigChanged((cfg) => {
+          config = cfg;
+          applyStyles();
+          render();
+          updateAutoHideState();
+        });
+      }
+      applyStyles();
+      render();
+      bindWaveEffect();
+      setupAutoHide();
+    }
+
+    function applyStyles() {
+      const r = document.documentElement;
+      const d = config?.dockConfig || {};
+      const shelf = document.getElementById('dock-shelf');
+      const op = config?.glassOpacity != null ? config.glassOpacity : 0.65;
+
+      r.style.setProperty('--glass-blur', (config?.glassBlur || 16) + 'px');
+      r.style.setProperty('--glass-opacity', op);
+      r.style.setProperty('--dock-icon-size', (d.iconSize || 42) + 'px');
+      r.style.setProperty('--dock-icon-gap', (d.iconGap || 8) + 'px');
+      r.style.setProperty('--accent', config?.accentColor || '#00e5db');
+
+      // 100% Background Transparency support (op === 0)
+      if (op <= 0.05) {
+        shelf.classList.remove('has-background');
+        shelf.classList.add('transparent-background');
+      } else {
+        shelf.classList.add('has-background');
+        shelf.classList.remove('transparent-background');
+      }
+
+      const isTop = d.position === 'top';
+      document.body.classList.toggle('is-top', isTop);
+    }
+
+    function render() {
+      const shelf = document.getElementById('dock-shelf');
+      const apps = config?.dockApps || [];
+      const d = config?.dockConfig || {};
+      const bgType = d.iconBgType || 'color';
+      let squircleBg = d.iconBgColor || '#1e2430';
+      let squircleShadow = '0 4px 12px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.2)';
+
+      if (bgType === 'accent') {
+        squircleBg = config?.accentColor || '#00e5db';
+      } else if (bgType === 'glass') {
+        squircleBg = 'rgba(255, 255, 255, 0.09)';
+        squircleShadow = '0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.15)';
+      } else if (bgType === 'transparent') {
+        squircleBg = 'transparent';
+        squircleShadow = 'none';
+      }
+
+      const mid = Math.floor(apps.length / 2);
+      const leftApps = apps.slice(0, mid);
+      const rightApps = apps.slice(mid);
+
+      const renderApp = (app) => `
+        <div class="dock-item" data-id="${app.id}" data-name="${app.name}" data-path="${app.path}" title="${app.name} (Clic derecho para opciones)">
+          <div class="tooltip">${app.name}</div>
+          <div class="dock-squircle" style="background: ${squircleBg}; box-shadow: ${squircleShadow};">
+            ${app.iconUrl || app.customIcon ? `<img src="${app.iconUrl || app.customIcon}" alt="">` : (SVGS[app.icon] || '🚀')}
+          </div>
+          <div class="dock-dot"></div>
+        </div>
+      `;
+
+      const centerActions = `
+        <button class="dock-btn-action" id="btn-open-hub" title="Ajustes de la Suite (⚙)">⚙</button>
+        <button class="dock-btn-action" id="btn-add-dock-app" title="Añadir Aplicación (+)">+</button>
+      `;
+
+      shelf.innerHTML = leftApps.map(renderApp).join('') + centerActions + rightApps.map(renderApp).join('');
+
+      shelf.querySelectorAll('.dock-item').forEach(el => {
+        const p = el.dataset.path;
+        const id = el.dataset.id;
+        const name = el.dataset.name;
+
+        el.onclick = () => {
+          if (window.topapp && p) window.topapp.launchApp(p);
+        };
+
+        el.oncontextmenu = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (window.topapp && window.topapp.showDockContextMenu) {
+            window.topapp.showDockContextMenu({ appId: id, path: p, name: name });
+          }
+        };
+      });
+
+      const btnAdd = document.getElementById('btn-add-dock-app');
+      if (btnAdd) {
+        btnAdd.onclick = () => {
+          if (window.topapp) window.topapp.openHub();
+        };
+      }
+
+      const btnHub = document.getElementById('btn-open-hub');
+      if (btnHub) {
+        btnHub.onclick = () => {
+          if (window.topapp) window.topapp.openHub();
+        };
+      }
+    }
+
+    function bindWaveEffect() {
+      const shelf = document.getElementById('dock-shelf');
+      shelf.addEventListener('mousemove', (e) => {
+        const d = config?.dockConfig || {};
+        if (d.waveEnabled === false) return;
+        const radius = d.waveRadius || 85;
+        const scaleMax = (d.waveScale || 1.4) - 1;
+        const items = shelf.querySelectorAll('.dock-item');
+
+        const isTop = d.position === 'top';
+        items.forEach(it => {
+          const rect = it.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const dist = Math.abs(e.clientX - centerX);
+          if (dist < radius && scaleMax > 0) {
+            const factor = 1 + (1 - dist / radius) * scaleMax;
+            const translateY = isTop ? (factor - 1) * 16 : -(factor - 1) * 16;
+            it.style.transform = `scale(${factor}) translateY(${translateY}px)`;
+          } else {
+            it.style.transform = 'scale(1) translateY(0)';
+          }
+        });
+      });
+
+      shelf.addEventListener('mouseleave', () => {
+        shelf.querySelectorAll('.dock-item').forEach(it => {
+          it.style.transform = 'scale(1) translateY(0)';
+        });
+      });
+    }
+
+    let isExpanded = false;
+    let shrinkTimer = null;
+
+    async function expandDock() {
+      if (shrinkTimer) clearTimeout(shrinkTimer);
+      const isAuto = !!config?.dockConfig?.autoHide;
+      if (!isAuto) return;
+
+      document.body.classList.remove('dock-shrunk');
+      const wrap = document.getElementById('dock-wrap');
+      if (wrap) {
+        wrap.style.display = 'flex';
+        void wrap.offsetHeight;
+        wrap.classList.remove('autohide-hidden');
+      }
+
+      if (!isExpanded) {
+        isExpanded = true;
+        if (window.topapp?.dockExpand) {
+          await window.topapp.dockExpand();
+        }
+      }
+    }
+
+    function scheduleShrinkDock(delay = 1000) {
+      const isAuto = !!config?.dockConfig?.autoHide;
+      if (!isAuto) return;
+      if (shrinkTimer) clearTimeout(shrinkTimer);
+      shrinkTimer = setTimeout(() => {
+        const wrap = document.getElementById('dock-wrap');
+        if (wrap) wrap.classList.add('autohide-hidden');
+        setTimeout(async () => {
+          if (isExpanded) {
+            isExpanded = false;
+            document.body.classList.add('dock-shrunk');
+            if (wrap) wrap.style.display = 'none';
+            if (window.topapp?.dockShrink) {
+              await window.topapp.dockShrink();
+            }
+          }
+        }, 320);
+      }, delay);
+    }
+
+    async function updateAutoHideState() {
+      const wrap = document.getElementById('dock-wrap');
+      const isAuto = !!config?.dockConfig?.autoHide;
+      if (!isAuto) {
+        if (shrinkTimer) clearTimeout(shrinkTimer);
+        document.body.classList.remove('dock-shrunk');
+        if (wrap) {
+          wrap.style.display = 'flex';
+          wrap.classList.remove('autohide-hidden');
+        }
+        isExpanded = true;
+        if (window.topapp?.dockExpand) await window.topapp.dockExpand();
+        return;
+      }
+
+      isExpanded = false;
+      document.body.classList.add('dock-shrunk');
+      if (wrap) {
+        wrap.classList.add('autohide-hidden');
+        wrap.style.display = 'none';
+      }
+      if (window.topapp?.dockShrink) await window.topapp.dockShrink();
+    }
+
+    function setupAutoHide() {
+      const trigger = document.getElementById('dock-trigger');
+
+      if (trigger) {
+        trigger.addEventListener('mouseenter', expandDock);
+        trigger.addEventListener('mousemove', expandDock);
+      }
+
+      document.body.addEventListener('mouseenter', expandDock);
+      document.body.addEventListener('mousemove', () => {
+        if (shrinkTimer) clearTimeout(shrinkTimer);
+      });
+      document.body.addEventListener('mouseleave', () => {
+        scheduleShrinkDock(1000);
+      });
+
+      window.addEventListener('dragenter', expandDock);
+      window.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        expandDock();
+      });
+
+      updateAutoHideState();
+    }
+
+    function setupDirectDockDrop() {
+      window.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+      });
+
+      window.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0 && window.topapp) {
+          const dockApps = config?.dockApps || [];
+
+          for (let i = 0; i < e.dataTransfer.files.length; i++) {
+            const file = e.dataTransfer.files[i];
+            const realPath = window.topapp.getPathForFile ? window.topapp.getPathForFile(file) : (file.path || null);
+            if (!realPath) continue;
+
+            let name = file.name ? file.name.replace(/\.(lnk|exe|bat|cmd)$/i, '') : 'App';
+            let iconUrl = null;
+            try {
+              iconUrl = await window.topapp.getIcon(realPath);
+            } catch (err) {}
+
+            const exists = dockApps.some(a => a.path && a.path.toLowerCase() === realPath.toLowerCase());
+            if (!exists) {
+              dockApps.push({
+                id: 'app-' + Date.now() + '-' + i,
+                name: name,
+                path: realPath,
+                iconUrl: iconUrl,
+                color: '#0284c7'
+              });
+            }
+          }
+
+          await window.topapp.saveConfig({ dockApps });
+        }
+      });
+    }
+
+    init();
+    setupDirectDockDrop();
+  </script>
+</body>
+</html>

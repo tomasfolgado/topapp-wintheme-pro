@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TopApp Curtain Nav</title>
+  <style>
+    :root {
+      --accent: #00e5db;
+      --accent-glow: rgba(0, 229, 219, 0.4);
+      --glass-bg: rgba(18, 22, 30, 0.78);
+      --glass-border: rgba(255, 255, 255, 0.12);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    body {
+      background: transparent;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    .curtain-capsule {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 3px;
+      height: 32px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px) saturate(190%);
+      -webkit-backdrop-filter: blur(18px) saturate(190%);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), 0 0 1px rgba(255, 255, 255, 0.2) inset;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .curtain-capsule:hover {
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 0 10px rgba(0, 229, 219, 0.15);
+    }
+    .curtain-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      color: rgba(255, 255, 255, 0.85);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      outline: none;
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .curtain-btn svg {
+      width: 13px;
+      height: 13px;
+      stroke: currentColor;
+      stroke-width: 2.3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), stroke 0.2s ease;
+    }
+    .curtain-btn:hover {
+      background: rgba(0, 229, 219, 0.18);
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+    .curtain-btn:active {
+      transform: scale(0.9);
+      background: rgba(0, 229, 219, 0.28);
+    }
+    /* Indicator dot showing status */
+    .btn-dot {
+      position: absolute;
+      bottom: 2.5px;
+      width: 2.5px;
+      height: 2.5px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 3px var(--accent);
+      transition: all 0.2s ease;
+      opacity: 0.8;
+    }
+    .curtain-btn.is-closed {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.45);
+    }
+    .curtain-btn.is-closed .btn-dot {
+      background: #94a3b8;
+      box-shadow: none;
+      opacity: 0.4;
+    }
+    .curtain-btn.is-closed:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(0, 229, 219, 0.15);
+    }
+    .curtain-btn.is-closed:hover .btn-dot {
+      background: var(--accent);
+      opacity: 1;
+      box-shadow: 0 0 6px var(--accent);
+    }
+    /* Flips arrow when collapsed so user intuitively sees direction to reveal */
+    #btn-curtain-left.is-closed svg {
+      transform: rotate(180deg);
+    }
+    #btn-curtain-right.is-closed svg {
+      transform: rotate(180deg);
+    }
+
+    /* Center Settings Gear Button */
+    .curtain-settings-btn {
+      color: rgba(0, 229, 219, 0.9);
+      background: rgba(0, 229, 219, 0.08);
+      border-color: rgba(0, 229, 219, 0.25);
+    }
+    .curtain-settings-btn svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .curtain-settings-btn:hover {
+      background: var(--accent);
+      color: #0c0f14;
+      border-color: var(--accent);
+      box-shadow: 0 0 14px var(--accent-glow);
+    }
+    .curtain-settings-btn:hover svg {
+      transform: rotate(60deg);
+    }
+  </style>
+</head>
+<body>
+  <div class="curtain-capsule" id="curtain-capsule">
+    <!-- Left Widget Curtain Toggle Button -->
+    <button class="curtain-btn" id="btn-curtain-left" title="Ocultar / Mostrar Widgets Izquierdos (Efecto Cortina)">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      <span class="btn-dot"></span>
+    </button>
+
+    <!-- Center Settings / Hub Gear Button -->
+    <button class="curtain-btn curtain-settings-btn" id="btn-curtain-settings" title="Abrir Configuración General / Panel de Control">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </button>
+
+    <!-- Right Widget Curtain Toggle Button -->
+    <button class="curtain-btn" id="btn-curtain-right" title="Ocultar / Mostrar Widgets Derechos (Efecto Cortina)">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      <span class="btn-dot"></span>
+    </button>
+  </div>
+
+  <script>
+    let leftOpen = true;
+    let rightOpen = true;
+
+    const btnLeft = document.getElementById('btn-curtain-left');
+    const btnRight = document.getElementById('btn-curtain-right');
+    const btnSettings = document.getElementById('btn-curtain-settings');
+
+    function updateUI() {
+      if (leftOpen) {
+        btnLeft.classList.remove('is-closed');
+        btnLeft.title = "Ocultar Widgets Izquierdos (Efecto Cortina)";
+      } else {
+        btnLeft.classList.add('is-closed');
+        btnLeft.title = "Mostrar Widgets Izquierdos (Efecto Cortina)";
+      }
+
+      if (rightOpen) {
+        btnRight.classList.remove('is-closed');
+        btnRight.title = "Ocultar Widgets Derechos (Efecto Cortina)";
+      } else {
+        btnRight.classList.add('is-closed');
+        btnRight.title = "Mostrar Widgets Derechos (Efecto Cortina)";
+      }
+    }
+
+    btnLeft.addEventListener('click', async () => {
+      if (window.topapp?.toggleLeftCurtain) {
+        const res = await window.topapp.toggleLeftCurtain();
+        if (res && typeof res.leftOpen === 'boolean') {
+          leftOpen = res.leftOpen;
+          updateUI();
+        }
+      }
+    });
+
+    btnRight.addEventListener('click', async () => {
+      if (window.topapp?.toggleRightCurtain) {
+        const res = await window.topapp.toggleRightCurtain();
+        if (res && typeof res.rightOpen === 'boolean') {
+          rightOpen = res.rightOpen;
+          updateUI();
+        }
+      }
+    });
+
+    if (btnSettings) {
+      btnSettings.addEventListener('click', async () => {
+        if (window.topapp?.toggleHub) {
+          await window.topapp.toggleHub();
+        } else if (window.topapp?.openHub) {
+          await window.topapp.openHub();
+        }
+      });
+    }
+
+    if (window.topapp?.onCurtainStateChanged) {
+      window.topapp.onCurtainStateChanged((state) => {
+        if (state) {
+          if (typeof state.leftOpen === 'boolean') leftOpen = state.leftOpen;
+          if (typeof state.rightOpen === 'boolean') rightOpen = state.rightOpen;
+          updateUI();
+        }
+      });
+    }
+
+    async function init() {
+      if (window.topapp?.getCurtainState) {
+        try {
+          const s = await window.topapp.getCurtainState();
+          if (s) {
+            if (typeof s.leftOpen === 'boolean') leftOpen = s.leftOpen;
+            if (typeof s.rightOpen === 'boolean') rightOpen = s.rightOpen;
+          }
+        } catch (e) {}
+      }
+      updateUI();
+    }
+
+    init();
+  </script>
+</body>
+</html>

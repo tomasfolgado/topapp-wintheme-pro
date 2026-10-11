@@ -1,0 +1,67 @@
+{
+  "name": "topapp-wintheme-pro",
+  "productName": "TopApp WinTheme Pro",
+  "version": "2.4.0",
+  "description": "Suite de personalización y productividad modular para Windows 10/11 creada por Tomás Folgado.",
+  "author": "Tomás Folgado",
+  "private": true,
+  "type": "module",
+  "main": "por modulos/main.cjs",
+  "scripts": {
+    "start": "electron \"por modulos/main.cjs\"",
+    "modular": "electron \"por modulos/main.cjs\"",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "app": "vite build && electron .",
+    "app:dev": "electron . --dev",
+    "dist": "electron-builder --win",
+    "build:exe": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.topapp.wintheme",
+    "productName": "TopApp WinTheme Pro",
+    "copyright": "Copyright © 2026 Tomás Folgado. Todos los derechos reservados.",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "por modulos/**/*",
+      "fondos/**/*",
+      "build/icon.ico",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "**/*.node",
+      "**/scripts/**/*",
+      "fondos/**/*"
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "legalTrademarks": "Tomás Folgado",
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "shortcutName": "TopApp WinTheme Pro",
+      "uninstallDisplayName": "TopApp WinTheme Pro v2.4.0",
+      "runAfterFinish": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3",
+    "vite": "^8.3.0"
+  },
+  "dependencies": {
+    "koffi": "^3.3.2"
+  }
+}
