@@ -16,17 +16,20 @@
 
 ## 📸 Interface & Screenshots
 
-| Floating Dock & Widgets | Control Panel (Hub) |
+| 🎛️ Modular Control Panel (Hub) & Settings | 🚀 Floating Dock (Wave Effect) & Desktop Fences |
 |:---:|:---:|
-| <img src="screenshots/screenshot1.jpg" width="450" alt="TopApp Desktop Widgets"> | <img src="screenshots/screenshot2.jpg" width="450" alt="Control Panel Hub"> |
+| <img src="screenshots/screenshot1.jpg" width="450" alt="Control Panel Hub & Transparency Settings"> | <img src="screenshots/screenshot2.jpg" width="450" alt="Floating Dock with Wave Zoom & Desktop Fences"> |
+| *Real-time glassmorphism blur, transparency & dock calibration* | *macOS-style shortcut dock with dynamic zoom & desktop containers* |
 
-| Desktop Fences | Telemetry & Customization |
+| 📊 Widget Layout & Reorder Manager | 📋 Visual Clipboard History & System Telemetry |
 |:---:|:---:|
-| <img src="screenshots/screenshot3.jpg" width="450" alt="Desktop Fences"> | <img src="screenshots/screenshot4.jpg" width="450" alt="Telemetry & Customization"> |
+| <img src="screenshots/screenshot3.jpg" width="450" alt="Widget Layout and Column Order Manager"> | <img src="screenshots/screenshot4.jpg" width="450" alt="Visual Clipboard History & Real-time Telemetry"> |
+| *Customize and reorder left & right sidebar widgets* | *Rich clipboard history, live RAM, temperature & I/O monitors* |
 
-<p align="center">
-  <img src="screenshots/screenshot5.jpg" width="750" alt="TopApp WinTheme Pro Overview">
-</p>
+| 🎵 Dock Shortcut Magnification, 5-Band Equalizer & Search Filters |
+|:---:|
+| <img src="screenshots/screenshot5.jpg" width="750" alt="Dock Wave Zoom, 5-Band Audio Equalizer and Search Filters"> |
+| *Interactive 5-band audio equalizer, file type search dropdown & app preview* |
 
 ---
 
