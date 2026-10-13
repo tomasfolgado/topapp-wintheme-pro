@@ -10,6 +10,7 @@
 [![Downloads](https://img.shields.io/github/downloads/tomasfolgado/topapp-wintheme-pro/total?color=ff7043&label=downloads)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases)
 [![License](https://img.shields.io/badge/license-MIT-00e5db.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078d4.svg)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
+[![VirusTotal](https://img.shields.io/badge/VirusTotal-100%25%20Clean-brightgreen.svg?logo=virustotal)](https://www.virustotal.com/gui/file/42028900161100f80967db0e865fa07272f695f97ebc3a9ef9c118a1935a219d/detection)
 [![Electron](https://img.shields.io/badge/Electron-44.5.1-47848F.svg)](https://www.electronjs.org/)
 
 ---
@@ -39,6 +40,16 @@
    👉 **[TopApp WinTheme Pro Setup 2.4.0.exe (Direct Download)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)**
 2. Run the downloaded installer and follow the quick setup wizard.
 3. The application will launch with native glassmorphism widgets, floating dock, and desktop fences ready to use.
+
+---
+
+## 🛡️ Security & Verification
+
+The official installer is thoroughly scanned and verified 100% clean of malware across 70+ antivirus engines. You can inspect the public scan report or verify the SHA-256 integrity hash:
+
+| File | Format | SHA-256 Checksum | VirusTotal |
+|---|---|---|:---:|
+| `TopApp WinTheme Pro Setup 2.4.0.exe` | Windows Installer | `42028900161100f80967db0e865fa07272f695f97ebc3a9ef9c118a1935a219d` | [Verified Clean (0/70)](https://www.virustotal.com/gui/file/42028900161100f80967db0e865fa07272f695f97ebc3a9ef9c118a1935a219d/detection) |
 
 ---
 

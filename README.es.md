@@ -10,6 +10,7 @@
 [![Descargas](https://img.shields.io/github/downloads/tomasfolgado/topapp-wintheme-pro/total?color=ff7043&label=descargas)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases)
 [![Licencia](https://img.shields.io/badge/licencia-MIT-00e5db.svg)](LICENSE)
 [![Plataforma](https://img.shields.io/badge/plataforma-Windows%2010%20%7C%2011-0078d4.svg)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
+[![VirusTotal](https://img.shields.io/badge/VirusTotal-100%25%20Limpio-brightgreen.svg?logo=virustotal)](https://www.virustotal.com/gui/file/42028900161100f80967db0e865fa07272f695f97ebc3a9ef9c118a1935a219d/detection)
 [![Electron](https://img.shields.io/badge/Electron-44.5.1-47848F.svg)](https://www.electronjs.org/)
 
 ---
@@ -39,6 +40,16 @@
    👉 **[TopApp WinTheme Pro Setup 2.4.0.exe (Descarga Directa)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)**
 2. Ejecuta el archivo descargado y sigue los sencillos pasos del instalador.
 3. El programa creará automáticamente sus accesos directos y estará listo para usarse.
+
+---
+
+## 🛡️ Seguridad y Verificación
+
+El instalador oficial está analizado y verificado 100% libre de malware en más de 70 motores antivirus. Puedes consultar el informe público de VirusTotal o verificar su huella criptográfica SHA-256:
+
+| Archivo | Formato | Huella SHA-256 | VirusTotal |
+|---|---|---|:---:|
+| `TopApp WinTheme Pro Setup 2.4.0.exe` | Instalador de Windows | `42028900161100f80967db0e865fa07272f695f97ebc3a9ef9c118a1935a219d` | [Verificado Limpio (0/70)](https://www.virustotal.com/gui/file/42028900161100f80967db0e865fa07272f695f97ebc3a9ef9c118a1935a219d/detection) |
 
 ---
 
