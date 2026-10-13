@@ -2,7 +2,7 @@
 
 > Suite modular de personalización y productividad para Windows 10 y 11.  
 > Autor: Tomás Folgado.  
-> 🌐 *Idioma / Language:* **Español** | [English](README.md)
+> *Idioma / Language:* **Español** | [English](README.md)
 
 [![Descargar para Windows](https://img.shields.io/badge/Descargar%20para%20Windows-Setup%20v2.4.0%20%28.exe%29-00e5db?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
 
@@ -15,19 +15,19 @@
 
 ---
 
-## 📸 Interfaz y Capturas de Pantalla
+## Interfaz y Capturas de Pantalla
 
-| 🎛️ Panel de Control Modular (Hub) y Ajustes | 🚀 Barra Dock Flotante (Efecto Onda) y Cajones |
+| Panel de Control Modular (Hub) y Ajustes | Barra Dock Flotante (Efecto Onda) y Cajones |
 |:---:|:---:|
 | <img src="screenshots/screenshot1.jpg" width="450" alt="Panel de Control Hub y Ajustes de Transparencia"> | <img src="screenshots/screenshot2.jpg" width="450" alt="Barra Dock con Wave Zoom y Cajones de Escritorio"> |
 | *Calibración de desenfoque, transparencias y dock en tiempo real* | *Barra estilo macOS con zoom dinámico y contenedores de escritorio* |
 
-| 📊 Gestor de Distribución y Orden de Widgets | 📋 Historial Visual de Portapapeles y Telemetría |
+| Gestor de Distribución y Orden de Widgets | Historial Visual de Portapapeles y Telemetría |
 |:---:|:---:|
 | <img src="screenshots/screenshot3.jpg" width="450" alt="Gestor de Columnas y Orden de Widgets"> | <img src="screenshots/screenshot4.jpg" width="450" alt="Historial de Portapapeles y Telemetría en Vivo"> |
 | *Organiza y reordena widgets entre las columnas izquierda y derecha* | *Portapapeles con miniaturas, monitores de RAM, temperatura y red* |
 
-| 🎵 Zoom del Dock, Ecualizador de Audio de 5 Bandas y Filtros de Búsqueda |
+| Zoom del Dock, Ecualizador de Audio de 5 Bandas y Filtros de Búsqueda |
 |:---:|
 | <img src="screenshots/screenshot5.jpg" width="750" alt="Zoom en Iconos, Ecualizador de 5 Bandas y Filtros"> |
 | *Ecualizador paramétrico de 5 bandas, buscador rápido con filtros y previsualización* |
@@ -43,7 +43,7 @@
 
 ---
 
-## 🛡️ Seguridad y Verificación
+## Seguridad y Verificación
 
 El instalador oficial está analizado y verificado 100% libre de malware en más de 70 motores antivirus. Puedes consultar el informe público de VirusTotal o verificar su huella criptográfica SHA-256:
 

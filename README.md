@@ -2,7 +2,7 @@
 
 > Modular customization and productivity suite for Windows 10 and 11.  
 > Author: Tomás Folgado.  
-> 🌐 *Language / Idioma:* **English** | [Español](README.es.md)
+> *Language / Idioma:* **English** | [Español](README.es.md)
 
 [![Download for Windows](https://img.shields.io/badge/Download%20for%20Windows-Setup%20v2.4.0%20%28.exe%29-00e5db?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/tomasfolgado/topapp-wintheme-pro/releases/latest)
 
@@ -15,19 +15,19 @@
 
 ---
 
-## 📸 Interface & Screenshots
+## Interface & Screenshots
 
-| 🎛️ Modular Control Panel (Hub) & Settings | 🚀 Floating Dock (Wave Effect) & Desktop Fences |
+| Modular Control Panel (Hub) & Settings | Floating Dock (Wave Effect) & Desktop Fences |
 |:---:|:---:|
 | <img src="screenshots/screenshot1.jpg" width="450" alt="Control Panel Hub & Transparency Settings"> | <img src="screenshots/screenshot2.jpg" width="450" alt="Floating Dock with Wave Zoom & Desktop Fences"> |
 | *Real-time glassmorphism blur, transparency & dock calibration* | *macOS-style shortcut dock with dynamic zoom & desktop containers* |
 
-| 📊 Widget Layout & Reorder Manager | 📋 Visual Clipboard History & System Telemetry |
+| Widget Layout & Reorder Manager | Visual Clipboard History & System Telemetry |
 |:---:|:---:|
 | <img src="screenshots/screenshot3.jpg" width="450" alt="Widget Layout and Column Order Manager"> | <img src="screenshots/screenshot4.jpg" width="450" alt="Visual Clipboard History & Real-time Telemetry"> |
 | *Customize and reorder left & right sidebar widgets* | *Rich clipboard history, live RAM, temperature & I/O monitors* |
 
-| 🎵 Dock Shortcut Magnification, 5-Band Equalizer & Search Filters |
+| Dock Shortcut Magnification, 5-Band Equalizer & Search Filters |
 |:---:|
 | <img src="screenshots/screenshot5.jpg" width="750" alt="Dock Wave Zoom, 5-Band Audio Equalizer and Search Filters"> |
 | *Interactive 5-band audio equalizer, file type search dropdown & app preview* |
@@ -43,7 +43,7 @@
 
 ---
 
-## 🛡️ Security & Verification
+## Security & Verification
 
 The official installer is thoroughly scanned and verified 100% clean of malware across 70+ antivirus engines. You can inspect the public scan report or verify the SHA-256 integrity hash:
 
@@ -55,23 +55,23 @@ The official installer is thoroughly scanned and verified 100% clean of malware 
 
 ## Key Features
 
-### 🎛️ Modular Control Panel (Hub)
+### Modular Control Panel (Hub)
 - Floating glassmorphism UI with real-time blur and opacity calibration.
 - Icon and text theme selector (White / Black) adapted for light or dark desktop wallpapers.
 - Full bilingual localization support (**English** & **Español**) with instant runtime switching.
 - Cyan accent color customization and margin reservation to keep desktop icons unobstructed.
 
-### 🚀 Floating Application Dock
+### Floating Application Dock
 - Smooth macOS/iPadOS-style floating shortcut dock with dynamic hover zoom (**Wave Effect**).
 - Customizable trigger zones, auto-hide sensitivity, spacing, and icon sizes (up to 256px native jumbo extraction).
 - Native drag-and-drop: drop any `.exe`, `.lnk` shortcut, or folder directly onto the dock to pin it instantly.
 
-### 📁 Desktop Fences & Icon Groups
+### Desktop Fences & Icon Groups
 - Translucent desktop containers to organize and group desktop shortcuts and files.
-- Pin-to-desktop (📌) integration with Windows shell, double-click to roll-up/collapse headers, and smooth scroll wheel support.
+- Pin-to-desktop integration with Windows shell, double-click to roll-up/collapse headers, and smooth scroll wheel support.
 - Zero-copy native file operations with right-click "Show in Explorer" context options.
 
-### 📊 Real-Time Telemetry & Productivity Widgets
+### Real-Time Telemetry & Productivity Widgets
 - **RAM Memory & Process Monitor:** Live GB and percentage display with instant working-set cache purge button and Task Manager shortcut.
 - **Hardware Thermal Telemetry:** Live CPU and GPU temperature sensors with interactive sparkline activity graphs.
 - **CPU Multi-Core Load:** Real-time load breakdown across processor cores and clock speeds.
@@ -80,17 +80,17 @@ The official installer is thoroughly scanned and verified 100% clean of malware 
 - **Printers & Scanners:** Print job status and quick access to Windows printer queue.
 - **Instant File Search:** Rapid folder indexing with filters for PDFs, images, documents, and code.
 
-### 🎵 Pro Audio Player
+### Pro Audio Player
 - Web Audio API real-time processing with ID3v2 album art extraction.
 - Interactive vinyl turntable with 150×150 px hover expansion.
 - 5-band parametric equalizer with tonal presets and dual 60 FPS animated audio visualizer.
 
-### 🖼️ Windows Wallpaper Hub
+### Windows Wallpaper Hub
 - High-resolution photography collection powered by Unsplash under open license.
 - Smooth matte gradient generator for distraction-free focus and maximum icon legibility.
 - Custom local image picker using native Windows desktop background APIs (`SystemParametersInfo`).
 
-### 🤖 AI Voice Assistant & Automation
+### AI Voice Assistant & Automation
 - Interactive desktop assistant with voice synthesis and speech recognition.
 - Seamless WhatsApp Web messaging contacts book, Gmail compose integration, and top 15 web service launchers.
 - Optional Google Gemini 3.5 Flash API connection for high-precision conversational AI.
